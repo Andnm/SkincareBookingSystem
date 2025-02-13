@@ -1,0 +1,104 @@
+.otp-register {
+  .otp-Form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    position: relative;
+
+    .title {
+      font-size: 20px;
+      font-weight: bold;
+      color: black;
+    }
+
+    .message {
+      color: #a3a3a3;
+      font-size: 14px;
+      margin-top: 4px;
+      text-align: center;
+    }
+
+    .mainHeading {
+      font-size: 1.1em;
+      color: rgb(15, 15, 15);
+      font-weight: 700;
+    }
+
+    .otpSubheading {
+      font-size: 0.7em;
+      color: black;
+      line-height: 17px;
+      text-align: center;
+    }
+
+    .inputs {
+      margin-top: 10px;
+      width: 320px;
+
+      input {
+        width: 32px;
+        height: 32px;
+        text-align: center;
+        border: none;
+        border-bottom: 3px solid #d2d2d2;
+        margin: 0 10px;
+        color: black;
+
+        &:focus {
+          border-bottom: 3px solid #00bcd4;
+          outline: none;
+        }
+      }
+    }
+
+    .verifyButton {
+      width: 100px;
+      /* width: 100%; */
+      height: 30px;
+      border: none;
+      background-color: #00bcd4;
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+      border-radius: 10px;
+      transition-duration: 0.2s;
+
+      &:hover {
+        background-color: #047887;
+        transition-duration: 0.2s;
+      }
+    }
+
+    .button-none-event {
+      cursor: no-drop !important;
+
+      &:hover {
+        background-color: #047887 !important;
+      }
+    }
+
+    .resendNote {
+      font-size: 0.8em;
+      color: black;
+    }
+
+    .resendBtn {
+      background-color: transparent;
+      border: none;
+      color: #00bcd4;
+      cursor: pointer;
+      font-size: 0.8em;
+
+      p:hover {
+        text-decoration: underline;
+      }
+    }
+
+    .bottom-content {
+      width: 500px;
+      justify-content: center;
+    }
+  }
+}

@@ -1,0 +1,211 @@
+.ant-layout-sider {
+  background: white;
+}
+
+.btn-logout {
+  cursor: pointer;
+  transition: 0.3s ease-in-out;
+  padding: 10px 15px;
+  border-radius: 15px;
+  color: #737791;
+
+  .icon {
+    color: #737791;
+  }
+}
+
+.btn-logout:hover {
+  transition: 0.3s ease-in-out;
+  background-color: white;
+}
+
+.notification {
+  background-color: #fffaf1;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 1px solid #ffa412;
+  cursor: pointer;
+  transition: 0.3s ease-in-out;
+
+  .icon {
+    color: #ffa412;
+  }
+}
+
+.notification:hover {
+  background-color: white;
+  transition: 0.3s ease-in-out;
+}
+
+$background-color: #fff;
+$box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+$card-padding: 20px;
+$primary-color: #4caf50;
+
+.dashboard {
+  display: grid;
+  grid-template-columns: repeat(24, 1fr);
+  gap: 12px;
+  width: 100%;
+  padding: 12px;
+
+  .summary_header {
+    margin-bottom: 12px;
+    display: flex;
+    justify-content: space-between;
+
+    p {
+      font-weight: bold;
+      font-size: 20px;
+    }
+
+    button {
+      display: flex;
+      padding: 6px 12px;
+      border-radius: 8px;
+      border: 2px solid rgba(0, 0, 0, 0.1);
+      background-color: white;
+      font-weight: bold;
+      gap: 6px;
+
+      &:hover {
+        cursor: pointer;
+      }
+
+      &:active {
+        cursor: pointer;
+        background-color: #f8f8f8;
+      }
+    }
+  }
+
+  .today_sales_summary {
+    grid-column: span 15;
+
+    .summary_item_container {
+      display: flex;
+      align-items: center;
+      width: 100%;
+      gap: 12px;
+
+      .summary_card {
+        width: 11vw;
+        padding: 12px;
+        border-radius: 12px;
+
+        .summary_card_icon {
+          display: flex;
+          width: 50px;
+          height: 50px;
+          padding: 6px;
+          border-radius: 50px;
+          margin-bottom: 8px;
+          justify-content: center;
+          align-items: center;
+        }
+
+        .summary_card_value {
+          font-weight: bold;
+          margin-bottom: 8px;
+          font-size: 20px;
+        }
+
+        .summary_card_label {
+          font-weight: 600;
+          color: #898792;
+          margin-bottom: 8px;
+        }
+        .summary_card_scale {
+          //   font-weight: 600;
+          color: #9eaeec;
+          margin-bottom: 8px;
+        }
+      }
+    }
+  }
+
+  .visitors_Chart {
+    grid-column: span 9;
+  }
+
+  .revenue_chart {
+    grid-column: span 10;
+    height: 35vh;
+  }
+
+  .satisfaction_chart {
+    grid-column: span 7;
+    height: 35vh;
+  }
+
+  .goals_chart {
+    grid-column: span 7;
+    height: 35vh;
+  }
+
+  .top_services {
+    grid-column: span 10;
+    table {
+      width: 100%;
+      border-collapse: collapse;
+
+      th,
+      td {
+        padding: 10px;
+        border-bottom: 1px solid #ccc;
+      }
+
+      .progress-bar {
+        width: 100%;
+        height: 5px;
+        background-color: #eee;
+        border-radius: 5px;
+        position: relative;
+        span {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+        }
+      }
+
+      .progress-bar-fill {
+        height: 100%;
+        background-color: #007bff;
+        border-radius: 5px;
+      }
+
+      .summary_table_header {
+        color: #dae0e5;
+      }
+
+      .summary_table_text {
+        color: #a0a2b0;
+      }
+      .summary_table_value {
+        width: fit-content;
+        padding: 2px 12px;
+        border: 1px solid black;
+        border-radius: 6px;
+        margin: 0 auto;
+      }
+    }
+  }
+
+  .world_map {
+    grid-column: span 7;
+    padding: 12px;
+  }
+
+  .volume_service_level {
+    grid-column: span 7;
+  }
+
+  .dashboard_boxshadow {
+    padding: 12px;
+    background-color: white;
+    box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+    border-radius: 12px;
+  }
+}

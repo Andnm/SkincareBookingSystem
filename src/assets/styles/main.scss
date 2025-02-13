@@ -1,0 +1,59 @@
+@import "variables";
+@import "globals";
+
+.container {
+  max-width: 1240px;
+  margin: 0 auto;
+}
+
+.light-gray-background {
+  background-color: $light-gray-color;
+}
+
+.header-home-page {
+  .logo {
+    height: 80px;
+    width: 80px;
+  }
+
+  .post-button {
+    background-color: #00b7ff;
+  }
+
+  .auth-button {
+    background-color: $dark-blue-color;
+  }
+}
+
+.home-page {
+  .banner-container {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+  }
+
+  .icon-filter {
+    color: #00b7ff;
+  }
+
+  .select-option {
+    color: #898a8b;
+  }
+
+  .experience-dorn {
+    background-color: $dark-blue-color;
+  }
+}
+
+.ant-carousel .slick-next,
+.ant-carousel .slick-prev {
+  width: 40px;
+  height: 40px;
+}
+
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
