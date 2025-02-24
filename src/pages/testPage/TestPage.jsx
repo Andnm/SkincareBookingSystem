@@ -97,46 +97,63 @@ const TestPage = () => {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <Card>
-        <Title level={2} className="text-center mb-8">
-          Skin Care Consultation
-        </Title>
-        <Steps
-          current={currentStep}
-          items={skinQuestions.map((_, index) => ({
-            title: `Step ${index + 1}`
-          }))}
-        />
-        <Card style={{ margin: "20px 0px" }}>
-          <Title level={4} className="mb-4">
-            {skinQuestions[currentStep].question}
-          </Title>
-          {renderQuestion(skinQuestions[currentStep])}
-        </Card>
-        <div className="flex justify-between">
-          <Button
-            onClick={() => setCurrentStep(current => current - 1)}
-            disabled={currentStep === 0}
-          >
-            Previous
-          </Button>
-          <Button
-            type="primary"
-            onClick={() => {
-              if (currentStep === skinQuestions.length - 1) {
-                handleSubmit();
-              } else {
-                setCurrentStep(current => current + 1);
-              }
-            }}
-            disabled={!answers[`question${skinQuestions[currentStep].id}`]}
-          >
-            {currentStep === skinQuestions.length - 1 ? 'Submit' : 'Next'}
-          </Button>
+    <div className="light-gray-background pb-20">
+      <div
+        className="banner-services bg-cover bg-center w-full h-[400px] relative"
+        style={{
+          backgroundImage:
+            'url("https://fwderm.com/wp-content/uploads/2022/12/May-2022__Blog-Header.jpg")',
+        }}
+      >
+        <div className="absolute -bottom-10 left-1/2 transform -translate-x-1/2 text-center bg-white p-6 rounded-lg shadow-lg max-w-md mx-auto">
+          <h2 className="text-3xl font-semibold text-blue-900">
+            Skin Care Consultation
+          </h2>
         </div>
-      </Card>
+      </div>
+
+      <div className="mt-20" />
+      
+      <div className="container mx-auto px-4 py-8">
+        <Card>
+          <Steps
+            current={currentStep}
+            items={skinQuestions.map((_, index) => ({
+              title: `Step ${index + 1}`
+            }))}
+          />
+          <Card style={{ margin: "20px 0px" }}>
+            <Title level={4} className="mb-4">
+              {skinQuestions[currentStep].question}
+            </Title>
+            {renderQuestion(skinQuestions[currentStep])}
+          </Card>
+          <div className="flex justify-between">
+            <Button
+              onClick={() => setCurrentStep(current => current - 1)}
+              disabled={currentStep === 0}
+            >
+              Previous
+            </Button>
+            <Button
+              type="primary"
+              onClick={() => {
+                if (currentStep === skinQuestions.length - 1) {
+                  handleSubmit();
+                } else {
+                  setCurrentStep(current => current + 1);
+                }
+              }}
+              disabled={!answers[`question${skinQuestions[currentStep].id}`]}
+            >
+              {currentStep === skinQuestions.length - 1 ? 'Submit' : 'Next'}
+            </Button>
+          </div>
+        </Card>
+      </div>
     </div>
+
+
   );
 };
 
