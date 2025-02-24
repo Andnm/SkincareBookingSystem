@@ -1,9 +1,111 @@
-import React from 'react'
+import React from 'react';
+import { Card, Row, Col, Typography, Tag, Button, Space } from 'antd';
+import { useNavigate } from 'react-router-dom';
+import { UserOutlined, PhoneOutlined, MailOutlined, ClockCircleOutlined, EnvironmentOutlined } from '@ant-design/icons';
+import { therapistData } from '../../utils/constants';
+
+const { Title, Text, Paragraph } = Typography;
 
 const SkinTherapist = () => {
-  return (
-    <div>SkinTherapist</div>
-  )
-}
+  const navigate = useNavigate();
 
-export default SkinTherapist
+  const handleSchedule = (therapist) => {
+    navigate('/schedule', { state: { therapist } });
+  };
+
+  return (
+    <div className="light-gray-background pb-20">
+      <div
+        className="banner-services bg-cover bg-center w-full h-[400px] relative"
+        style={{
+          backgroundImage:
+            'url("https://oms.hotdeal.vn/images/editors/sources/000366451002/366451-366451-body-chung(8).jpg")',
+        }}
+      >
+        <div className="absolute -bottom-10 left-1/2 transform -translate-x-1/2 text-center bg-white p-6 rounded-lg shadow-lg max-w-md mx-auto">
+          <h2 className="text-3xl font-semibold text-blue-900">
+            Our Skin Therapists
+          </h2>
+        </div>
+      </div>
+
+      <div className="mt-20" />
+
+      <div className="container mx-auto px-6">
+        <Row gutter={[24, 24]}>
+          {therapistData.map((therapist) => (
+            <Col xs={24} md={12} key={therapist.id}>
+              <Card bodyStyle={{ padding: 0 }}>
+                <Row>
+                  <Col xs={24} sm={8} className="relative">
+                    <div className="w-full h-full flex flex-col items-center justify-between p-4 ">
+                      <div className='w-full h-[300px]'>
+                        <img
+                          src={therapist.image}
+                          alt={therapist.fullName}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                      <div className="flex justify-center w-full">
+                        <Button
+                          type="primary"
+                          size="large"
+                          onClick={() => handleSchedule(therapist)}
+                        >
+                          Book Appointment
+                        </Button>
+                      </div>
+                    </div>
+                  </Col>
+
+                  <Col xs={24} sm={16}>
+                    <div className="p-6">
+                      <Space direction="vertical" size={16} className="w-full">
+                        <div>
+                          <Title level={3} className="mb-2">
+                            {therapist.fullName}
+                          </Title>
+                          <Space wrap>
+                            {therapist.specialization.split(',').map((spec, index) => (
+                              <Tag color="blue" key={index} className="mr-2">
+                                {spec.trim()}
+                              </Tag>
+                            ))}
+                          </Space>
+                        </div>
+
+                        <Space direction="vertical" size={8}>
+                          <Text type="secondary" className="flex items-center gap-2">
+                            <ClockCircleOutlined /> Experience: {therapist.experience}
+                          </Text>
+                          <Text type="secondary" className="flex items-center gap-2">
+                            <UserOutlined /> {therapist.gender}, {therapist.age} years old
+                          </Text>
+                          <Text type="secondary" className="flex items-center gap-2">
+                            <PhoneOutlined /> {therapist.phone}
+                          </Text>
+                          <Text type="secondary" className="flex items-center gap-2">
+                            <MailOutlined /> {therapist.email}
+                          </Text>
+                          <Text type="secondary" className="flex items-center gap-2">
+                            <EnvironmentOutlined /> {therapist.address}
+                          </Text>
+                        </Space>
+
+                        <Paragraph className="text-gray-600">
+                          {therapist.description}
+                        </Paragraph>
+                      </Space>
+                    </div>
+                  </Col>
+                </Row>
+              </Card>
+            </Col>
+          ))}
+        </Row>
+      </div>
+    </div>
+  );
+};
+
+export default SkinTherapist;

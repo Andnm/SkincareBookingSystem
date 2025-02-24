@@ -100,7 +100,7 @@ export function useScrollToTop() {
 }
 
 export const handleActionNotSupport = () => {
-  toast.warning("Tính năng chưa hỗ trợ");
+  toast.warning("This feature is not supported yet!");
 };
 
 export const handleLowerCaseNonAccentVietnamese = (str) => {

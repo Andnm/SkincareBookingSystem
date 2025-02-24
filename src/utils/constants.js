@@ -182,3 +182,220 @@ export const list_customer_successful = [
   "https://gaspa.vn/wp-content/uploads/2022/03/feedback-05-1024x1024.jpg",
   "https://gaspa.vn/wp-content/uploads/2022/03/feedback-06-1024x1024.jpg",
 ];
+
+export const blogData = [
+  {
+    id: 1,
+    title: "10 Korean Skincare Secrets for Glowing Skin",
+    author: "Sarah Kim",
+    date: "2024-02-24",
+    summary:
+      "Discover the most effective Korean beauty rituals and products that will transform your skincare routine",
+    content:
+      "Korean skincare has taken the beauty world by storm, and for good reason. The famous 10-step routine isn't just about using more products – it's about understanding your skin's needs and treating it with care. Let's dive into the secrets that make Korean skincare so effective: 1. Double Cleansing, 2. Hydration is Key, 3. Sun Protection Always...",
+    image:
+      "https://ucarecdn.com/173832ec-11ae-48f7-a140-f4e5faa73970/-/format/auto/-/preview/3000x3000/-/quality/lighter/Blog-10-Step-Routine.jpeg",
+    tags: ["Korean Beauty", "Skincare", "Beauty Tips"],
+  },
+  {
+    id: 2,
+    title: "Natural Ingredients for Acne-Prone Skin",
+    author: "Emily Johnson",
+    date: "2024-02-23",
+    summary:
+      "Learn about powerful natural ingredients that can help combat acne and improve skin health",
+    content:
+      "When it comes to treating acne, nature provides some of the most effective solutions. Tea tree oil, aloe vera, and green tea are just a few of the natural ingredients that can work wonders for acne-prone skin. In this guide, we'll explore how to incorporate these ingredients into your skincare routine...",
+    image: "https://cdn.shopify.com/s/files/1/0023/9953/5204/files/acneblog9-02_large.jpg?v=1590696548",
+    tags: ["Natural Beauty", "Acne Treatment", "Skin Health"],
+  },
+  {
+    id: 3,
+    title: "Anti-Aging Skincare: Start in Your 20s",
+    author: "Dr. Lisa Chen",
+    date: "2024-02-22",
+    summary:
+      "Why you should start anti-aging skincare early and the best preventive measures to take",
+    content:
+      "Prevention is better than cure – this saying couldn't be more true when it comes to anti-aging skincare. Starting a proper skincare routine in your 20s can significantly impact how your skin ages. Key ingredients to incorporate include retinol, vitamin C, and peptides...",
+    image: "https://www.venustreatments.com/img/blog/Anti-Aging_Skin_Care_Tips_by_the_Decade-_Teens__20s__and_30s.jpg",
+    tags: ["Anti-aging", "Skincare", "Prevention"],
+  },
+  {
+    id: 4,
+    title: "The Complete Guide to Chemical Exfoliation",
+    author: "Rachel Brown",
+    date: "2024-02-21",
+    summary:
+      "Understanding AHAs, BHAs, and PHAs - choosing the right exfoliant for your skin type",
+    content:
+      "Chemical exfoliation has revolutionized the way we care for our skin. Unlike physical scrubs, chemical exfoliants can provide more consistent and gentle results. Learn about different types of chemical exfoliants and how to safely incorporate them into your routine...",
+    image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRJH4LK3AuwZoKSvs4rwbyJDQSZ8FD7sfUAxg&s",
+    tags: ["Exfoliation", "Skincare", "Chemical Peels"],
+  },
+  {
+    id: 5,
+    title: "Hydration Heroes: Best Moisturizers for Every Skin Type",
+    author: "Michelle Wang",
+    date: "2024-02-20",
+    summary: "Find the perfect moisturizer for your skin type and climate",
+    content:
+      "Proper hydration is the foundation of healthy skin. Whether you have dry, oily, combination, or sensitive skin, there's a perfect moisturizer out there for you. We'll explore different formulations, key ingredients to look for, and how to layer moisturizers with other skincare products...",
+    image: "https://images.ctfassets.net/bcjr30vxh6td/10A1g5bGp34C5yqeQ1HANA/783c7a3e708bd423ef093fd676ca0a0f/how-to-find-the-best-moisturizer-for-your-skin-type",
+    tags: ["Hydration", "Moisturizer", "Skincare Tips"],
+  },
+];
+
+export const therapistData = [
+  {
+    id: 1,
+    fullName: "Dr. Sarah Johnson",
+    age: 35,
+    gender: "Female",
+    phone: "+1 234-567-8901",
+    email: "sarah.johnson@skincare.com",
+    address: "123 Beauty Street, New York",
+    experience: "10 years",
+    specialization: "Anti-aging treatments, Chemical peels",
+    description: "Dr. Sarah Johnson is a board-certified dermatologist with extensive experience in cosmetic dermatology and anti-aging treatments. She specializes in advanced chemical peels and customized skincare protocols.",
+    image: "https://www.excelsioraccreditation.com.au/wp-content/uploads/2016/09/team-1.jpg"
+  },
+  {
+    id: 2,
+    fullName: "Dr. Michael Chen",
+    age: 42,
+    gender: "Male",
+    phone: "+1 234-567-8902",
+    email: "michael.chen@skincare.com",
+    address: "456 Wellness Ave, Los Angeles",
+    experience: "15 years",
+    specialization: "Acne treatment, Laser therapy",
+    description: "Dr. Michael Chen is known for his expertise in treating complex acne cases and advanced laser treatments. He has helped thousands of patients achieve clear, healthy skin through personalized treatment plans.",
+    image: "https://www.ucihealth.org/-/media/images/modules/physician-directory/physicians/c/chen_jefferson160x185.jpg?h=185&iar=0&w=160&hash=8630ACE7D01C76C7BCB09B6E3CC3707C"
+  },
+  {
+    id: 3,
+    fullName: "Dr. Emily Taylor",
+    age: 38,
+    gender: "Female",
+    phone: "+1 234-567-8903",
+    email: "emily.taylor@skincare.com",
+    address: "789 Glow Road, Miami",
+    experience: "12 years",
+    specialization: "Microdermabrasion, Facial treatments",
+    description: "Dr. Emily Taylor is a skincare specialist focusing on non-invasive facial treatments and microdermabrasion. She is passionate about helping clients achieve their best skin through gentle yet effective treatments.",
+    image: "https://www.healthyhearing.com/uploads/images/Emily-T-Image39a.jpg"
+  },
+  {
+    id: 4,
+    fullName: "Dr. James Wilson",
+    age: 45,
+    gender: "Male",
+    phone: "+1 234-567-8904",
+    email: "james.wilson@skincare.com",
+    address: "321 Radiance Blvd, Chicago",
+    experience: "18 years",
+    specialization: "Skin rejuvenation, Scar treatment",
+    description: "Dr. James Wilson is a leading expert in skin rejuvenation and scar treatment. His approach combines traditional methods with cutting-edge technology to deliver optimal results.",
+    image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSYyC0w3zsXTqZFfBUkDvPtxURoz9z9NbKkQVRK8_aXfeWaUmqrrf5eI7LMfEEnDdKN7To&usqp=CAU"
+  }
+];
+
+
+export const skinQuestions = [
+  {
+    id: 1,
+    question: "What is your skin type?",
+    options: [
+      { value: "oily", label: "Oily" },
+      { value: "dry", label: "Dry" },
+      { value: "combination", label: "Combination" },
+      { value: "normal", label: "Normal" },
+      { value: "sensitive", label: "Sensitive" }
+    ]
+  },
+  {
+    id: 2,
+    question: "What are your main skin concerns?",
+    options: [
+      { value: "acne", label: "Acne" },
+      { value: "aging", label: "Signs of aging" },
+      { value: "darkSpots", label: "Dark spots/Pigmentation" },
+      { value: "dullness", label: "Dullness" },
+      { value: "largePores", label: "Large pores" }
+    ],
+    multiple: true
+  },
+  {
+    id: 3,
+    question: "How often do you experience breakouts?",
+    options: [
+      { value: "never", label: "Never" },
+      { value: "rarely", label: "Rarely" },
+      { value: "sometimes", label: "Sometimes" },
+      { value: "often", label: "Often" },
+      { value: "veryOften", label: "Very often" }
+    ]
+  },
+  {
+    id: 4,
+    question: "How would you describe your skin's sensitivity?",
+    options: [
+      { value: "notSensitive", label: "Not sensitive at all" },
+      { value: "slightlySensitive", label: "Slightly sensitive" },
+      { value: "moderatelySensitive", label: "Moderately sensitive" },
+      { value: "verySensitive", label: "Very sensitive" }
+    ]
+  },
+  {
+    id: 5,
+    question: "What is your current skincare routine?",
+    options: [
+      { value: "basic", label: "Basic (Cleanser & Moisturizer)" },
+      { value: "intermediate", label: "Intermediate (Basic + Toner + Sunscreen)" },
+      { value: "advanced", label: "Advanced (Full routine with serums/treatments)" },
+      { value: "none", label: "No routine" }
+    ]
+  }
+];
+
+export const recommendationLogic = (answers) => {
+  const recommendations = [];
+
+  if (answers.question1 === 'oily') {
+    recommendations.push({
+      service: "Oil Control Facial Treatment",
+      description: "Deep cleansing treatment specifically designed for oily skin"
+    });
+  }
+
+  if (answers.question1 === 'dry') {
+    recommendations.push({
+      service: "Hydrating Facial",
+      description: "Intensive moisturizing treatment for dry skin"
+    });
+  }
+
+  if (answers.question2?.includes('acne')) {
+    recommendations.push({
+      service: "Anti-Acne Treatment",
+      description: "Professional treatment to combat acne and prevent breakouts"
+    });
+  }
+
+  if (answers.question2?.includes('aging')) {
+    recommendations.push({
+      service: "Anti-Aging Facial",
+      description: "Treatment focusing on reducing fine lines and wrinkles"
+    });
+  }
+
+  if (answers.question4 === 'verySensitive') {
+    recommendations.push({
+      service: "Gentle Soothing Treatment",
+      description: "Calming treatment suitable for sensitive skin"
+    });
+  }
+
+  return recommendations;
+};

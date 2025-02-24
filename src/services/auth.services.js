@@ -2,7 +2,7 @@ import axiosInstance from "./axiosInstance";
 
 export const login = async (credentials) => {
   try {
-    const response = await axiosInstance.post("/api/auth/login", credentials);
+    const response = await axiosInstance.post("/api/v1/auth", credentials);
     return response.data;
   } catch (error) {
     throw error;
@@ -12,7 +12,7 @@ export const login = async (credentials) => {
 export const loginWithGoogle = async (credentials) => {
   try {
     const response = await axiosInstance.post(
-      "/api/auth/loginGoogle",
+      "/api/v1/auth/authenticate-with-google",
       credentials
     );
     return response.data;
@@ -23,7 +23,7 @@ export const loginWithGoogle = async (credentials) => {
 
 export const register = async (userData) => {
   try {
-    const response = await axiosInstance.post("/api/auth/register", userData);
+    const response = await axiosInstance.post("/api/v1/accounts/sign-up", userData);
     return response.data;
   } catch (error) {
     throw error;

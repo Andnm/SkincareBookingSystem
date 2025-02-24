@@ -12,7 +12,8 @@ import AboutUs from "../pages/aboutUs/AboutUs";
 import TestPage from "../pages/testPage/TestPage";
 import SkinTherapist from "../pages/skinTherapist/SkinTherapist";
 import Blogs from "../pages/blog/Blogs";
-import Scheduled from "../pages/scheduled/Scheduled";
+import BlogDetail from "../pages/blogDetail/BlogDetail";
+import Schedule from "../pages/schedule/Schedule";
 
 const Router = () => {
   return (
@@ -33,7 +34,8 @@ const Router = () => {
         <Route path="/test" element={<TestPage />} />
         <Route path="/skin-therapist" element={<SkinTherapist />} />
         <Route path="/blogs" element={<Blogs />} />
-        <Route path="/scheduled" element={<Scheduled />} />
+        <Route path="/blogs/:id" element={<BlogDetail />} />
+        <Route path="/schedule" element={<Schedule />} />
       </Route>
 
       <Route element={<AdminLayout />}>

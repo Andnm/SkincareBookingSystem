@@ -120,7 +120,7 @@ const Home = () => {
             autoplay
             autoplaySpeed={3000}
           >
-            {services_carousel.map((room) => (
+            {services_carousel.map((room, index) => (
               <div className="" key={room._id}>
                 <div className="bg-white rounded-md text-black p-1 shadow-md hover:shadow-lg transition duration-300 mx-2">
                   <img

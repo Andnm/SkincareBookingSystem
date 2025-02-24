@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./auth.styles.scss";
 import ThirdServicesLogin from "./ThirdServicesLogin";
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa6";
@@ -8,8 +8,10 @@ import { toast } from "react-toastify";
 import { userSelector } from "../../redux/selectors/selector";
 import { Spin } from "antd";
 import { useNavigate } from "react-router-dom";
-import { ROLE_MANAGER, ROLE_CUSTOMER } from "../../utils/constants";
+import { ROLE_MANAGER, ROLE_CUSTOMER, ROLE_STAFF } from "../../utils/constants";
 import { updateUser } from "../../redux/reducers/userReducer";
+import { getFirebaseDeviceToken } from "../../services/firebase.services"
+import { toastError } from "../../utils/helpers";
 
 const LoginModal = ({ setIsLoginModal, triggerCancel }) => {
   const dispatch = useDispatch();
@@ -20,92 +22,64 @@ const LoginModal = ({ setIsLoginModal, triggerCancel }) => {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
+    deviceToken: ""
   });
-
-  // const handleLogin = async () => {
-  //   setIsLoading(true);
-  //   try {
-  //     const response = await dispatch(loginThunk(formData));
-  //     if (loginThunk.rejected.match(response)) {
-  //       toast.error(response.payload || response.error.message);
-  //     } else {
-  //       const getCurrentUserAction = await dispatch(getCurrentUserThunk());
-
-  //       if (getCurrentUserThunk.rejected.match(getCurrentUserAction)) {
-  //         toast.error(response.payload || response.error.message);
-  //       } else {
-  //         setFormData({
-  //           email: "",
-  //           password: "",
-  //         });
-  //         triggerCancel();
-
-  //         const userRole = getCurrentUserAction?.payload?.role;
-
-  //         switch (userRole) {
-  //           case ROLE_MANAGER:
-  //             navigate("/dashboard");
-  //             break;
-  //           case ROLE_CUSTOMER:
-  //             navigate("/");
-  //             break;
-  //           default:
-  //             navigate("/");
-  //         }
-  //       }
-  //     }
-  //   } catch (error) {
-  //     toast.error("Something went wrong");
-  //   } finally {
-  //     setIsLoading(false);
-  //   }
-  // };
 
   const handleLogin = async () => {
     if (!formData.email || !formData.password) {
-      toast.error("Vui lòng nhập đầy đủ email và mật khẩu!");
+      toast.error("Please enter full email and password!");
       return;
     }
 
     setIsLoading(true);
+
+    if (!formData.deviceToken) {
+      const token = await getFirebaseDeviceToken();
+      console.log("device token: ",)
+      if (token) {
+        setFormData(prevData => ({
+          ...prevData,
+          deviceToken: token
+        }));
+      }
+    }
+
     try {
-      const response = await fetch(
-        "https://67ae3fb59e85da2f020cefc6.mockapi.io/user"
-      );
-      const users = await response.json();
-
-      const user = users.find(
-        (u) => u.email === formData.email && u.password === formData.password
-      );
-
-      if (user) {
-        dispatch(updateUser(user));
-        
-        switch (user.role) {
-          case ROLE_MANAGER:
-            navigate("/dashboard");
-            break;
-          case ROLE_CUSTOMER:
-            navigate("/");
-            break;
-          default:
-            navigate("/");
-        }
-
-        setFormData({
-          email: "",
-          password: "",
-        });
-        toast.success("Login successfully!");
-        triggerCancel();
+      const response = await dispatch(loginThunk(formData));
+      if (loginThunk.rejected.match(response)) {
+        toast.error(response.payload || response.error.message);
       } else {
-        toast.error("Email or password is not correct!");
+        const getCurrentUserAction = await dispatch(getCurrentUserThunk());
+
+        if (getCurrentUserThunk.rejected.match(getCurrentUserAction)) {
+          toast.error(response.payload || response.error.message);
+        } else {
+          setFormData({
+            email: "",
+            password: "",
+          });
+          triggerCancel();
+
+          const userRole = getCurrentUserAction?.payload?.role;
+
+          switch (userRole) {
+            case ROLE_MANAGER:
+            case ROLE_STAFF:
+              navigate("/dashboard");
+              break;
+            case ROLE_CUSTOMER:
+              navigate("/");
+              break;
+            default:
+              navigate("/");
+          }
+        }
       }
     } catch (error) {
-      console.error("Login error:", error);
-      toast.error("Đã có lỗi xảy ra. Vui lòng thử lại!");
+      toastError(error)
+    } finally {
+      setIsLoading(false);
     }
-    setIsLoading(false);
   };
 
   return (
@@ -157,7 +131,7 @@ const LoginModal = ({ setIsLoginModal, triggerCancel }) => {
             <p
               className="hover:underline"
               onClick={() => {
-                navigate("/forgot-password");
+                // navigate("/forgot-password");
                 triggerCancel();
               }}
             >
@@ -167,9 +141,8 @@ const LoginModal = ({ setIsLoginModal, triggerCancel }) => {
 
           <div className="mb-2 mt-5">
             <button
-              className={`cursor-pointer w-full bg-blue-800 text-white py-4 font-semibold hover:bg-blue-900 disabled:bg-gray-400 ${
-                isLoading ? "disabled:cursor-wait" : ""
-              }`}
+              className={`cursor-pointer w-full bg-blue-800 text-white py-4 font-semibold hover:bg-blue-900 disabled:bg-gray-400 ${isLoading ? "disabled:cursor-wait" : ""
+                }`}
               disabled={isLoading}
               type="submit"
               onClick={(e) => {

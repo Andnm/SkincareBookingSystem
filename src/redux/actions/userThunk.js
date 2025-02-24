@@ -9,6 +9,8 @@ export const loginThunk = createAsyncThunk(
       const response = await login(credentials);
       return response;
     } catch (error) {
+      console.log("error: ", error)
+
       return rejectWithValue(error.response?.data || "Something went wrong");
     }
   }
@@ -21,6 +23,8 @@ export const loginGoogleThunk = createAsyncThunk(
       const response = await loginWithGoogle(credentials);
       return response;
     } catch (error) {
+      console.log("error: ", error)
+
       return rejectWithValue(error.response?.data || "Something went wrong");
     }
   }
@@ -33,6 +37,7 @@ export const registerThunk = createAsyncThunk(
       const response = await register(data);
       return response;
     } catch (error) {
+      console.log("error: ", error)
       return rejectWithValue(error.response?.data || "Something went wrong");
     }
   }
@@ -45,7 +50,6 @@ export const getCurrentUserThunk = createAsyncThunk(
       const response = await getCurrentUser();
       return response;
     } catch (error) {
-      // Reject without providing a value, just let it reject
       return rejectWithValue("Something went wrong");
     }
   }

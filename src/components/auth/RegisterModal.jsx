@@ -10,6 +10,8 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { userSelector } from "../../redux/selectors/selector";
 import { Spin } from "antd";
+import { ROLE_MANAGER, ROLE_CUSTOMER } from "../../utils/constants";
+import { toastError } from "../../utils/helpers";
 
 const RegisterModal = ({ setIsLoginModal, triggerCancel }) => {
   const dispatch = useDispatch();
@@ -18,25 +20,32 @@ const RegisterModal = ({ setIsLoginModal, triggerCancel }) => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
-    name: "",
+    fullName: "",
     phone: "",
     email: "",
     password: "",
+    gender: "Male",
     confirmPassword: "",
   });
 
   const handleRegister = async () => {
     if (formData.password !== formData.confirmPassword) {
-      toast.warning("Nhập lại mật khẩu sai");
+      toast.warning("Re-enter wrong password");
       return;
     }
 
     const data = {
       email: formData.email,
       password: formData.password,
-      fullname: formData.name,
-      phone_number: formData.phone,
+      fullName: formData.fullName,
+      phone: formData.phone,
+      role: ROLE_CUSTOMER,
+      age: 0,
+      address: "",
+      gender: formData.gender
     };
+
+    console.log("data: ", data)
 
     setIsLoading(true);
 
@@ -50,17 +59,19 @@ const RegisterModal = ({ setIsLoginModal, triggerCancel }) => {
           toast.error(action.payload || action.error.message);
         } else {
           setFormData({
-            name: "",
+            fullName: "",
             phone: "",
             email: "",
             password: "",
+            gender: "Male",
             confirmPassword: "",
           });
           triggerCancel();
         }
       }
     } catch (error) {
-      toast.error("Something went wrong");
+      console.log("error: ", error)
+      toastError(error)
     } finally {
       setIsLoading(false);
     }
@@ -84,9 +95,9 @@ const RegisterModal = ({ setIsLoginModal, triggerCancel }) => {
               placeholder="Fullname"
               type="text"
               style={{ borderColor: "#E4E4E7" }}
-              value={formData.name}
+              value={formData.fullName}
               onChange={(e) =>
-                setFormData({ ...formData, name: e.target.value })
+                setFormData({ ...formData, fullName: e.target.value })
               }
             />
           </div>
@@ -96,11 +107,14 @@ const RegisterModal = ({ setIsLoginModal, triggerCancel }) => {
               className="w-full px-4 py-4 border focus:outline-none focus:ring-2 focus:ring-blue-600"
               placeholder="Phone number"
               type="text"
+              pattern="[0-9]*"
+              inputMode="numeric"
               style={{ borderColor: "#E4E4E7" }}
               value={formData.phone}
-              onChange={(e) =>
-                setFormData({ ...formData, phone: e.target.value })
-              }
+              onChange={(e) => {
+                const numericValue = e.target.value.replace(/\D/g, '');
+                setFormData({ ...formData, phone: numericValue });
+              }}
             />
           </div>
 
@@ -115,6 +129,55 @@ const RegisterModal = ({ setIsLoginModal, triggerCancel }) => {
                 setFormData({ ...formData, email: e.target.value })
               }
             />
+          </div>
+
+          <div className="mb-4">
+            <div className="w-full px-4 py-3 border focus:outline-none focus:ring-2 focus:ring-blue-600" style={{ borderColor: "#E4E4E7" }}>
+              <div className="flex flex-row items-center gap-16">
+                <label className="text-gray-500">Gender</label>
+                <div className="flex gap-6">
+                  <label className="flex items-center cursor-pointer">
+                    <input
+                      type="radio"
+                      name="gender"
+                      value="Male"
+                      checked={formData.gender === "Male"}
+                      onChange={(e) =>
+                        setFormData({ ...formData, gender: e.target.value })
+                      }
+                      className="mr-2"
+                    />
+                    <span>Male</span>
+                  </label>
+                  <label className="flex items-center cursor-pointer">
+                    <input
+                      type="radio"
+                      name="gender"
+                      value="Female"
+                      checked={formData.gender === "Female"}
+                      onChange={(e) =>
+                        setFormData({ ...formData, gender: e.target.value })
+                      }
+                      className="mr-2"
+                    />
+                    <span>Female</span>
+                  </label>
+                  <label className="flex items-center cursor-pointer">
+                    <input
+                      type="radio"
+                      name="gender"
+                      value="Other"
+                      checked={formData.gender === "Other"}
+                      onChange={(e) =>
+                        setFormData({ ...formData, gender: e.target.value })
+                      }
+                      className="mr-2"
+                    />
+                    <span>Other</span>
+                  </label>
+                </div>
+              </div>
+            </div>
           </div>
 
           <div className="mb-4 relative">
@@ -164,9 +227,8 @@ const RegisterModal = ({ setIsLoginModal, triggerCancel }) => {
                 e.preventDefault();
                 handleRegister();
               }}
-              className={`cursor-pointer w-full bg-blue-800 text-white py-4 font-semibold hover:bg-blue-900 disabled:bg-gray-400 ${
-                isLoading ? "disabled:cursor-wait" : ""
-              } `}
+              className={`cursor-pointer w-full bg-blue-800 text-white py-4 font-semibold hover:bg-blue-900 disabled:bg-gray-400 ${isLoading ? "disabled:cursor-wait" : ""
+                } `}
               disabled={isLoading}
             >
               <Spin spinning={isLoading} />
