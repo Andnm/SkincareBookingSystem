@@ -9,6 +9,15 @@ export const login = async (credentials) => {
   }
 };
 
+export const loginWithRefreshToken = async (credentials) => {
+  try {
+    const response = await axiosInstance.post("/api/v1/auth/sign-in-with-refresh-token", credentials);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
 export const loginWithGoogle = async (credentials) => {
   try {
     const response = await axiosInstance.post(

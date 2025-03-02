@@ -33,46 +33,45 @@ const LoginModal = ({ setIsLoginModal, triggerCancel }) => {
 
     setIsLoading(true);
 
-    if (!formData.deviceToken) {
-      const token = await getFirebaseDeviceToken();
-      console.log("device token: ",)
-      if (token) {
-        setFormData(prevData => ({
-          ...prevData,
-          deviceToken: token
-        }));
-      }
-    }
+    // if (!formData.deviceToken) {
+    //   const token = await getFirebaseDeviceToken();
+    //   console.log("device token: ",)
+    //   if (token) {
+    //     setFormData(prevData => ({
+    //       ...prevData,
+    //       deviceToken: token
+    //     }));
+    //   }
+    // }
 
     try {
       const response = await dispatch(loginThunk(formData));
+      console.log("response: ", response)
+      
       if (loginThunk.rejected.match(response)) {
         toast.error(response.payload || response.error.message);
       } else {
-        const getCurrentUserAction = await dispatch(getCurrentUserThunk());
 
-        if (getCurrentUserThunk.rejected.match(getCurrentUserAction)) {
-          toast.error(response.payload || response.error.message);
-        } else {
-          setFormData({
-            email: "",
-            password: "",
-          });
-          triggerCancel();
+        const roleName = response?.payload?.account?.roleName
 
-          const userRole = getCurrentUserAction?.payload?.role;
+        setFormData({
+          email: "",
+          password: "",
+        });
+        triggerCancel();
 
-          switch (userRole) {
-            case ROLE_MANAGER:
-            case ROLE_STAFF:
-              navigate("/dashboard");
-              break;
-            case ROLE_CUSTOMER:
-              navigate("/");
-              break;
-            default:
-              navigate("/");
-          }
+
+        switch (roleName) {
+          case ROLE_MANAGER:
+          case ROLE_STAFF:
+            navigate("/dashboard");
+            break;
+          case ROLE_CUSTOMER:
+            navigate("/");
+            break;
+          default:
+            navigate("/");
+
         }
       }
     } catch (error) {
