@@ -10,7 +10,7 @@ import { Spin } from "antd";
 import { useNavigate } from "react-router-dom";
 import { ROLE_MANAGER, ROLE_CUSTOMER, ROLE_STAFF } from "../../utils/constants";
 import { updateUser } from "../../redux/reducers/userReducer";
-import { getFirebaseDeviceToken } from "../../services/firebase.services"
+import { getFirebaseDeviceToken } from "../../services/firebase.services";
 import { toastError } from "../../utils/helpers";
 
 const LoginModal = ({ setIsLoginModal, triggerCancel }) => {
@@ -22,7 +22,7 @@ const LoginModal = ({ setIsLoginModal, triggerCancel }) => {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
-    deviceToken: ""
+    deviceToken: "",
   });
 
   const handleLogin = async () => {
@@ -46,20 +46,17 @@ const LoginModal = ({ setIsLoginModal, triggerCancel }) => {
 
     try {
       const response = await dispatch(loginThunk(formData));
-      console.log("response: ", response)
-      
-      if (loginThunk.rejected.match(response)) {
-        toast.error(response.payload || response.error.message);
-      } else {
 
-        const roleName = response?.payload?.account?.roleName
+      if (loginThunk.rejected.match(response)) {
+        toastError(response?.payload);
+      } else {
+        const roleName = response?.payload?.account?.roleName;
 
         setFormData({
           email: "",
           password: "",
         });
         triggerCancel();
-
 
         switch (roleName) {
           case ROLE_MANAGER:
@@ -71,11 +68,10 @@ const LoginModal = ({ setIsLoginModal, triggerCancel }) => {
             break;
           default:
             navigate("/");
-
         }
       }
     } catch (error) {
-      toastError(error)
+      toastError(error);
     } finally {
       setIsLoading(false);
     }
@@ -140,8 +136,9 @@ const LoginModal = ({ setIsLoginModal, triggerCancel }) => {
 
           <div className="mb-2 mt-5">
             <button
-              className={`cursor-pointer w-full bg-blue-800 text-white py-4 font-semibold hover:bg-blue-900 disabled:bg-gray-400 ${isLoading ? "disabled:cursor-wait" : ""
-                }`}
+              className={`cursor-pointer w-full bg-blue-800 text-white py-4 font-semibold hover:bg-blue-900 disabled:bg-gray-400 ${
+                isLoading ? "disabled:cursor-wait" : ""
+              }`}
               disabled={isLoading}
               type="submit"
               onClick={(e) => {

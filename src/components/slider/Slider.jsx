@@ -37,7 +37,7 @@ const SliderComponent = () => {
         mode="inline"
         selectedKeys={[globalData.sliderMenuItemSelectedKey]}
         items={sliderMenu.filter((t) =>
-          areInArray(userData?.user?.role, ...t.roles)
+          areInArray(userData?.user?.roleName, ...t.roles)
         )}
         onClick={async (info) => {
           dispatch(setSliderMenuItemSelectedKey(info.key));

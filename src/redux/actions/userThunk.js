@@ -1,6 +1,5 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { login, loginWithGoogle, register } from "../../services/auth.services";
-import { getCurrentUser } from "../../services/user.services";
+import { login, loginWithGoogle, loginWithRefreshToken, register } from "../../services/auth.services";
 
 export const loginThunk = createAsyncThunk(
   "user/login",
@@ -37,19 +36,19 @@ export const registerThunk = createAsyncThunk(
       const response = await register(data);
       return response;
     } catch (error) {
-      console.log("error: ", error)
-      return rejectWithValue(error.response?.data || "Something went wrong");
+      return rejectWithValue(error || "Something went wrong");
     }
   }
 );
 
 export const getCurrentUserThunk = createAsyncThunk(
   "user/getCurrentUser",
-  async (_, { rejectWithValue }) => {
+  async (refreshToken, { rejectWithValue }) => {
     try {
-      const response = await getCurrentUser();
+      const response = await loginWithRefreshToken(refreshToken);
       return response;
     } catch (error) {
+      console.log("error: ", error)
       return rejectWithValue("Something went wrong");
     }
   }

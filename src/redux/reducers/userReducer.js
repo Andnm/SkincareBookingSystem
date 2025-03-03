@@ -35,6 +35,7 @@ const userSlice = createSlice({
     logoutUser: (state) => {
       state.user = null;
       localStorage.removeItem("accesstoken");
+      localStorage.removeItem("refreshtoken");
     },
   },
   extraReducers: (builder) => {
@@ -46,6 +47,8 @@ const userSlice = createSlice({
       })
       .addCase(loginThunk.fulfilled, (state, action) => {
         localStorage.setItem("accesstoken", action.payload.accessToken);
+        localStorage.setItem("refreshtoken", action.payload.refreshToken);
+        state.user = action.payload.account;
         state.loading = false;
       })
       .addCase(loginThunk.rejected, (state, action) => {
@@ -60,6 +63,8 @@ const userSlice = createSlice({
       })
       .addCase(loginGoogleThunk.fulfilled, (state, action) => {
         localStorage.setItem("accesstoken", action.payload.accessToken);
+        localStorage.setItem("refreshtoken", action.payload.refreshToken);
+        state.user = action.payload.account;
         state.loading = false;
       })
       .addCase(loginGoogleThunk.rejected, (state, action) => {
@@ -69,11 +74,11 @@ const userSlice = createSlice({
 
       //register case
       .addCase(registerThunk.pending, (state) => {
-        state.loading = true;
+        state.loading = true; 
         state.error = null;
       })
       .addCase(registerThunk.fulfilled, (state, action) => {
-        localStorage.setItem("accesstoken", action.payload.accessToken);
+        state.user = action.payload;
         state.loading = false;
       })
       .addCase(registerThunk.rejected, (state, action) => {
@@ -87,7 +92,7 @@ const userSlice = createSlice({
         state.error = null;
       })
       .addCase(getCurrentUserThunk.fulfilled, (state, action) => {
-        state.user = action.payload;
+        state.user = action.payload.account;
         state.loading = false;
       })
       .addCase(getCurrentUserThunk.rejected, (state, action) => {

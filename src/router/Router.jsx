@@ -2,7 +2,8 @@ import { Route, Routes } from "react-router-dom";
 import Home from "../pages/home/Home";
 import NotFound from "../pages/notFound/NotFound";
 import AuthLayout from "../components/layout/AuthLayout";
-import Account from "../pages/account";
+import Account from "../pages/admin/Account";
+import Transaction from "../pages/admin/Transaction";
 import ChangePassword from "../pages/account/ChangePassword";
 import Dashboard from "../pages/admin/Dashboard";
 import AdminLayout from "../components/layout/AdminLayout";
@@ -40,6 +41,8 @@ const Router = () => {
 
       <Route element={<AdminLayout />}>
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/accounts" element={<Account />} />
+        <Route path="/transactions" element={<Transaction />} />
       </Route>
       <Route path="/*" element={<NotFound />} />
     </Routes>

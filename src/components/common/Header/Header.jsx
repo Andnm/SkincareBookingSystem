@@ -32,9 +32,9 @@ function Header() {
 
   useEffect(() => {
     const handleRelogin = async () => {
-      const token = await localStorage.getItem("accesstoken");
-      if (token !== "undefined") {
-        const getCurrentUserAction = await dispatch(getCurrentUserThunk());
+      const refreshToken = await localStorage.getItem("refreshtoken");
+      if (refreshToken !== "undefined") {
+        const getCurrentUserAction = await dispatch(getCurrentUserThunk(refreshToken));
         if (getCurrentUserThunk.rejected.match(getCurrentUserAction)) {
           console.log(
             getCurrentUserAction.payload || getCurrentUserAction.error.message
@@ -120,7 +120,7 @@ function Header() {
                     <Avatar
                       src={
                         user?.user?.avatar_url ??
-                        generateFallbackAvatar(user?.user?.fullname)
+                        generateFallbackAvatar(user?.user?.fullName)
                       }
                       alt={"avatar"}
                       style={{
@@ -131,7 +131,7 @@ function Header() {
                     />
 
                     <span className="auth-link hover:underline cursor-pointer truncate">
-                      {user?.user?.fullname}
+                      {user?.user?.fullName}
                     </span>
                   </>
                 ) : (
@@ -163,7 +163,7 @@ function Header() {
                     >
                       <FaUser className="text-sm" />
                       Profile
-                    </li>                
+                    </li>
 
                     <li
                       className="px-8 py-2 flex flex-row gap-2 items-center hover:bg-gray-100 text-red-500 cursor-pointer"

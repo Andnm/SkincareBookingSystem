@@ -9,11 +9,10 @@ const Account = () => {
   const dispatch = useDispatch();
   const userData = useSelector(userSelector);
   const fileInputRef = useRef(null);
-
   console.log("userData: ", userData);
 
   const [formData, setFormData] = useState({
-    fullname: userData?.user?.fullname || "",
+    fullName: userData?.user?.fullName || "",
     email: userData?.user?.email || "",
     phone_number: userData?.user?.phone_number || "",
     address: userData?.user?.address || "",
@@ -53,7 +52,7 @@ const Account = () => {
     //   }
 
     //   const updateData = {
-    //     name: formData.fullname,
+    //     name: formData.fullName,
     //     email: formData.email,
     //     phone: formData.phone,
     //     address: formData.address,
@@ -100,11 +99,11 @@ const Account = () => {
                 <label className="text-gray-600">Full name</label>
                 <input
                   type="text"
-                  value={formData.fullname}
+                  value={formData.fullName}
                   onChange={(e) =>
                     setFormData({
                       ...formData,
-                      fullname: e.target.value,
+                      fullName: e.target.value,
                     })
                   }
                   className="col-span-2 p-2 border rounded"
@@ -188,7 +187,7 @@ const Account = () => {
                 <img
                   src={
                     userData?.user?.avatar_url ??
-                    generateFallbackAvatar(userData?.user?.fullname)
+                    generateFallbackAvatar(userData?.user?.fullName)
                   }
                   alt="avatar"
                   loading="lazy"

@@ -5,6 +5,7 @@ import { FaRegEye, FaRegEyeSlash } from "react-icons/fa6";
 import { toast } from "react-toastify";
 import {
   getCurrentUserThunk,
+  loginThunk,
   registerThunk,
 } from "../../redux/actions/userThunk";
 import { useDispatch, useSelector } from "react-redux";
@@ -12,6 +13,7 @@ import { userSelector } from "../../redux/selectors/selector";
 import { Spin } from "antd";
 import { ROLE_MANAGER, ROLE_CUSTOMER } from "../../utils/constants";
 import { toastError } from "../../utils/helpers";
+import { updateUser } from "../../redux/reducers/userReducer";
 
 const RegisterModal = ({ setIsLoginModal, triggerCancel }) => {
   const dispatch = useDispatch();
@@ -27,6 +29,7 @@ const RegisterModal = ({ setIsLoginModal, triggerCancel }) => {
     gender: "Male",
     confirmPassword: "",
   });
+  const userData = useSelector(userSelector);
 
   const handleRegister = async () => {
     if (formData.password !== formData.confirmPassword) {
@@ -42,21 +45,26 @@ const RegisterModal = ({ setIsLoginModal, triggerCancel }) => {
       role: ROLE_CUSTOMER,
       age: 0,
       address: "",
-      gender: formData.gender
+      gender: formData.gender,
     };
 
-    console.log("data: ", data)
+    console.log("data: ", data);
 
     setIsLoading(true);
 
     try {
-      const action = await dispatch(registerThunk(data));
-      if (registerThunk.rejected.match(action)) {
-        toast.error(action.payload || action.error.message);
+      const responseRegister = await dispatch(registerThunk(data));
+      if (registerThunk.rejected.match(responseRegister)) {
+        toast.error(responseRegister.payload || responseRegister.error.message);
       } else {
-        const getCurrentUserAction = await dispatch(getCurrentUserThunk());
-        if (getCurrentUserThunk.rejected.match(getCurrentUserAction)) {
-          toast.error(action.payload || action.error.message);
+        const credentials = {
+          email: formData.email,
+          password: formData.password,
+        };
+        const responseLogin = await dispatch(loginThunk(credentials));
+
+        if (loginThunk.rejected.match(responseLogin)) {
+          toast.error(responseLogin.payload || responseLogin.error.message);
         } else {
           setFormData({
             fullName: "",
@@ -70,8 +78,8 @@ const RegisterModal = ({ setIsLoginModal, triggerCancel }) => {
         }
       }
     } catch (error) {
-      console.log("error: ", error)
-      toastError(error)
+      console.log("error: ", error);
+      toastError(error);
     } finally {
       setIsLoading(false);
     }
@@ -112,7 +120,15 @@ const RegisterModal = ({ setIsLoginModal, triggerCancel }) => {
               style={{ borderColor: "#E4E4E7" }}
               value={formData.phone}
               onChange={(e) => {
-                const numericValue = e.target.value.replace(/\D/g, '');
+                let numericValue = e.target.value.replace(/\D/g, "");
+                if (numericValue.startsWith("0") && numericValue.length > 10) {
+                  numericValue = numericValue.slice(0, 10);
+                } else if (
+                  numericValue.startsWith("84") &&
+                  numericValue.length > 11
+                ) {
+                  numericValue = numericValue.slice(0, 11);
+                }
                 setFormData({ ...formData, phone: numericValue });
               }}
             />
@@ -132,7 +148,10 @@ const RegisterModal = ({ setIsLoginModal, triggerCancel }) => {
           </div>
 
           <div className="mb-4">
-            <div className="w-full px-4 py-3 border focus:outline-none focus:ring-2 focus:ring-blue-600" style={{ borderColor: "#E4E4E7" }}>
+            <div
+              className="w-full px-4 py-3 border focus:outline-none focus:ring-2 focus:ring-blue-600"
+              style={{ borderColor: "#E4E4E7" }}
+            >
               <div className="flex flex-row items-center gap-16">
                 <label className="text-gray-500">Gender</label>
                 <div className="flex gap-6">
@@ -227,8 +246,9 @@ const RegisterModal = ({ setIsLoginModal, triggerCancel }) => {
                 e.preventDefault();
                 handleRegister();
               }}
-              className={`cursor-pointer w-full bg-blue-800 text-white py-4 font-semibold hover:bg-blue-900 disabled:bg-gray-400 ${isLoading ? "disabled:cursor-wait" : ""
-                } `}
+              className={`cursor-pointer w-full bg-blue-800 text-white py-4 font-semibold hover:bg-blue-900 disabled:bg-gray-400 ${
+                isLoading ? "disabled:cursor-wait" : ""
+              } `}
               disabled={isLoading}
             >
               <Spin spinning={isLoading} />

@@ -3,7 +3,9 @@ import { FaCalendarAlt, FaHistory, FaInfo, FaUser } from "react-icons/fa";
 import { MdOutlinePassword } from "react-icons/md";
 import { AiOutlineDashboard } from "react-icons/ai";
 import { toast } from "react-toastify";
-import { ROLE_MANAGER } from "./constants";
+import { ROLE_MANAGER, ROLE_STAFF } from "./constants";
+import { GrTransaction } from "react-icons/gr";
+import { GoPerson } from "react-icons/go";
 
 export function formatDateTimeVN(isoString) {
   const date = new Date(isoString);
@@ -39,24 +41,19 @@ export const sliderMenu = [
     label: "Dashboard",
     roles: [ROLE_MANAGER],
   },
-  // {
-  //   key: "manage-user",
-  //   icon: <BiSolidUserAccount />,
-  //   label: "Người dùng",
-  //   roles: [ROLE_MANAGER],
-  // },
-  // {
-  //   key: "manage-room",
-  //   icon: <FaHotel />,
-  //   label: "Phòng trọ",
-  //   roles: [ROLE_MANAGER],
-  // },
-  // {
-  //   key: "manage-transaction",
-  //   icon: <MdOutlineRequestPage />,
-  //   label: "Giao dịch",
-  //   roles: [ROLE_MANAGER],
-  // },
+  {
+    key: "accounts",
+    icon: <GoPerson />,
+    label: "Accounts",
+    roles: [ROLE_MANAGER, ROLE_STAFF],
+  },
+  {
+    key: "transactions",
+    icon: <GrTransaction />,
+    label: "Transactions",
+    roles: [ROLE_MANAGER, ROLE_STAFF],
+  },
+  
 ];
 
 export const filterMenuByRole = (menu, role) => {
@@ -118,11 +115,11 @@ export const handleLowerCaseNonAccentVietnamese = (str) => {
   return str;
 };
 
-export const generateFallbackAvatar = (fullname) => {
+export const generateFallbackAvatar = (fullName) => {
   const fallbackColor = "#FF9966";
 
   const initials = handleLowerCaseNonAccentVietnamese(
-    fullname?.charAt(0).toUpperCase() || ""
+    fullName?.charAt(0).toUpperCase() || ""
   );
 
   const svgString = `

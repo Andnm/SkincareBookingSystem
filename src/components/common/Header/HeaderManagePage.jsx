@@ -33,9 +33,9 @@ const HeaderManagePage = () => {
 
   useEffect(() => {
     const handleRelogin = async () => {
-      const token = await localStorage.getItem("accesstoken");
-      if (token !== "undefined") {
-        const getCurrentUserAction = await dispatch(getCurrentUserThunk());
+      const refreshToken = await localStorage.getItem("refreshtoken");
+      if (refreshToken !== "undefined") {
+        const getCurrentUserAction = await dispatch(getCurrentUserThunk(refreshToken));
         if (getCurrentUserThunk.rejected.match(getCurrentUserAction)) {
           console.log(
             getCurrentUserAction.payload || getCurrentUserAction.error.message
@@ -271,7 +271,7 @@ const HeaderManagePage = () => {
 
           <div className="profile flex justify-between flex-row items-center">
             <div className="name text-center font-semibold text-base">
-              {userData?.user?.fullname || "Admin"}
+              {userData?.user?.fullName || "Admin"}
             </div>
             <div className="icon-person flex justify-center items-center">
               <IoPersonCircleOutline className="w-7 h-7" />
