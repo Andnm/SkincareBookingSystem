@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { FaCalendarAlt, FaHistory, FaInfo, FaUser } from "react-icons/fa";
-import { RiCalendarScheduleLine } from "react-icons/ri";
+import { RiBookletLine, RiCalendarScheduleLine } from "react-icons/ri";
 import { MdOutlineMedicalServices, MdOutlinePassword } from "react-icons/md";
 import { AiOutlineDashboard } from "react-icons/ai";
 import { toast } from "react-toastify";
@@ -43,25 +43,31 @@ export const sliderMenu = [
     roles: [ROLE_MANAGER],
   },
   {
-    key: "accounts",
+    key: "manage-accounts",
     icon: <GoPerson />,
     label: "Accounts",
     roles: [ROLE_MANAGER],
   },
   {
-    key: "services",
+    key: "manage-services",
     icon: <MdOutlineMedicalServices />,
     label: "Services",
     roles: [ROLE_MANAGER],
   },
   {
-    key: "bookings",
-    icon: <RiCalendarScheduleLine />,
+    key: "manage-bookings",
+    icon: <RiBookletLine />,
     label: "Bookings",
     roles: [ROLE_MANAGER, ROLE_STAFF],
   },
   {
-    key: "transactions",
+    key: "manage-working-schedule",
+    icon: <RiCalendarScheduleLine />,
+    label: "Working Schedule",
+    roles: [ROLE_MANAGER, ROLE_STAFF],
+  },
+  {
+    key: "manage-transactions",
     icon: <GrTransaction />,
     label: "Transactions",
     roles: [ROLE_MANAGER, ROLE_STAFF],

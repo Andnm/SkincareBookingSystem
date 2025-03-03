@@ -18,6 +18,7 @@ import ManageTransaction from "../pages/admin/ManageTransaction";
 import ManageBooking from "../pages/admin/ManageBooking";
 import Account from "../pages/account";
 import ManageService from "../pages/admin/ManageService";
+import ManageWorkingSchedule from "../pages/admin/ManageWorkingSchedule";
 
 const Router = () => {
   return (
@@ -44,10 +45,11 @@ const Router = () => {
 
       <Route element={<AdminLayout />}>
         <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/accounts" element={<ManageAccount />} />
-        <Route path="/services" element={<ManageService />} />
-        <Route path="/transactions" element={<ManageTransaction />} />
-        <Route path="/bookings" element={<ManageBooking />} />
+        <Route path="/manage-accounts" element={<ManageAccount />} />
+        <Route path="/manage-services" element={<ManageService />} />
+        <Route path="/manage-transactions" element={<ManageTransaction />} />
+        <Route path="/manage-bookings" element={<ManageBooking />} />
+        <Route path="/manage-working-schedule" element={<ManageWorkingSchedule />} />
       </Route>
       <Route path="/*" element={<NotFound />} />
     </Routes>
