@@ -2,10 +2,12 @@ import React, { useState } from "react";
 import { Modal, Button, Input, Select, Form, message } from "antd";
 import { ROLE_SKINTHERAPIST, ROLE_STAFF } from "../../utils/constants";
 import { PlusOutlined } from "@ant-design/icons";
+import { createAccountByManager } from "../../services/user.services";
+import { toast } from "react-toastify";
 
 const { Option } = Select;
 
-const CreateAccount = () => {
+const CreateAccount = ({ onAccountCreated }) => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [form] = Form.useForm();
 
@@ -23,12 +25,23 @@ const CreateAccount = () => {
       content: "Are you sure you want to create this account?",
       okText: "Yes",
       cancelText: "No",
-      onOk: () => {
-        console.log("Account Info: ", values);
+      onOk: async () => {
+        try {
+          console.log("Account Info: ", values);
+          await createAccountByManager(values);
 
-        message.success("Account created successfully!");
-        setIsModalVisible(false);
-        form.resetFields();
+          toast.success("Account created successfully!");
+          
+          if (onAccountCreated) {
+            onAccountCreated(values);
+          }
+
+          setIsModalVisible(false);
+          form.resetFields();
+        } catch (error) {
+          toast.error("Account creation failed! Please try again.");
+          console.error("Error creating account:", error);
+        }
       },
     });
   };

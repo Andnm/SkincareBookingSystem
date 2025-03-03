@@ -26,9 +26,7 @@ import { PiPlus } from "react-icons/pi";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { userSelector } from "../../redux/selectors/selector";
-import {
-  getAllAccounts,
-} from "../../services/user.services";
+import { getAllAccounts } from "../../services/user.services";
 import {
   generateFallbackAvatar,
   handleActionNotSupport,
@@ -39,7 +37,7 @@ const { Option } = Select;
 const { confirm } = Modal;
 const { Text } = Typography;
 
-const Account = () => {
+const ManageAccount = () => {
   const navigate = useNavigate();
   const userData = useSelector(userSelector);
 
@@ -48,7 +46,7 @@ const Account = () => {
   const [searchText, setSearchText] = useState("");
   const [typeSearch, setTypeSearch] = useState("email");
   const [orderBy, setOrderBy] = useState("");
-  const [isAscending, setIsAscending] = useState(true);
+  const [isAscending, setIsAscending] = useState(false);
 
   const [pageIndex, setPageIndex] = useState(1);
   const [pageSize, setPageSize] = useState(10);
@@ -59,17 +57,18 @@ const Account = () => {
       if (userData) {
         setIsLoading(true);
         try {
-          const data = {
-            pageIndex: pageIndex - 1,
-            pageSize: pageSize,
-            orderBy: orderBy,
-            isAscending: isAscending,
-            email: typeSearch === "email" ? searchText : "",
-            fullName: typeSearch === "fullName" ? searchText : "",
-            status: "",
+          const params = {
+            PageIndex: pageIndex - 1,
+            PageSize: pageSize,
+            OrderBy: orderBy,
+            IsAscending: isAscending,
+            Email: typeSearch === "email" ? searchText : "",
+            FullName: typeSearch === "fullName" ? searchText : "",
+            Status: "",
           };
 
-          const responseGetAllItem = await getAllAccounts(data);
+          const responseGetAllItem = await getAllAccounts(params);
+          console.log("responseGetAllItem: ", responseGetAllItem)
           setProcessingData([...responseGetAllItem.data]);
           setTotalRows(responseGetAllItem.totalRows);
         } catch (error) {
@@ -90,9 +89,14 @@ const Account = () => {
     setPageSize(pageSize);
   };
 
+  const handleAccountCreated = (newAccount) => {
+    setProcessingData((prevData) => [newAccount, ...prevData]);
+    setTotalRows((prevTotal) => prevTotal + 1);
+  };
+
   const columns = [
     {
-      title: "Account",
+      title: "ManageAccount",
       dataIndex: "name",
       key: "name",
       render: (text, record) => (
@@ -204,7 +208,7 @@ const Account = () => {
               <Option value="fullName">Full Name</Option>
             </Select>
             <Input
-              placeholder={`Enter the ${typeSearch} you want to find`}
+              placeholder={`Enter ${typeSearch} you want to find`}
               value={searchText}
               onChange={(e) => setSearchText(e.target.value)}
               className="w-72 "
@@ -240,7 +244,7 @@ const Account = () => {
           </div>
         </div>
 
-        <CreateAccount />
+        <CreateAccount onAccountCreated={handleAccountCreated} />
       </div>
 
       <div>
@@ -262,4 +266,4 @@ const Account = () => {
   );
 };
 
-export default Account;
+export default ManageAccount;

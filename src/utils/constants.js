@@ -1,6 +1,6 @@
 export const ROLE_MANAGER = "Manager";
 export const ROLE_CUSTOMER = "Customer";
-export const ROLE_SKINTHERAPIST = "SkinTherapist";
+export const ROLE_SKINTHERAPIST = "Skin Therapist";
 export const ROLE_STAFF = "Staff";
 
 export const menuItemsHeader = [

@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import { FaCalendarAlt, FaHistory, FaInfo, FaUser } from "react-icons/fa";
+import { RiCalendarScheduleLine } from "react-icons/ri";
 import { MdOutlinePassword } from "react-icons/md";
 import { AiOutlineDashboard } from "react-icons/ai";
 import { toast } from "react-toastify";
@@ -45,6 +46,12 @@ export const sliderMenu = [
     key: "accounts",
     icon: <GoPerson />,
     label: "Accounts",
+    roles: [ROLE_MANAGER],
+  },
+  {
+    key: "bookings",
+    icon: <RiCalendarScheduleLine />,
+    label: "Bookings",
     roles: [ROLE_MANAGER, ROLE_STAFF],
   },
   {
@@ -53,7 +60,6 @@ export const sliderMenu = [
     label: "Transactions",
     roles: [ROLE_MANAGER, ROLE_STAFF],
   },
-  
 ];
 
 export const filterMenuByRole = (menu, role) => {
