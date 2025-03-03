@@ -13,6 +13,7 @@ import {
   Switch,
   InputNumber,
   Select,
+  Typography,
 } from "antd";
 import React, { useEffect, useState } from "react";
 import { BiDetail, BiUpload } from "react-icons/bi";
@@ -35,19 +36,20 @@ import {
   handleActionNotSupport,
 } from "../../utils/helpers";
 
+const { Option } = Select;
 const { confirm } = Modal;
+const { Text } = Typography;
 
 const Account = () => {
   const navigate = useNavigate();
   const userData = useSelector(userSelector);
 
   const [isLoading, setIsLoading] = useState(false);
-  const [originalData, setOriginalData] = useState([]);
   const [processingData, setProcessingData] = useState([]);
   const [searchText, setSearchText] = useState("");
-  const [categoryFilter, setCategoryFilter] = useState(undefined);
-  const [uploading, setUploading] = useState(false);
-  const [selectedItem, setSelectedItem] = useState(null);
+  const [typeSearch, setTypeSearch] = useState("email");
+  const [orderBy, setOrderBy] = useState("");
+  const [isAscending, setIsAscending] = useState(true);
 
   const [pageIndex, setPageIndex] = useState(1);
   const [pageSize, setPageSize] = useState(10);
@@ -61,16 +63,14 @@ const Account = () => {
           const data = {
             pageIndex: pageIndex - 1,
             pageSize: pageSize,
-            orderBy: "",
-            isAscending: true,
-            email: searchText,
-            fullName: "",
+            orderBy: orderBy,
+            isAscending: isAscending,
+            email: typeSearch === "email" ? searchText : "", 
+            fullName: typeSearch === "fullName" ? searchText : "",
             status: "",
           };
 
           const responseGetAllItem = await getAllAccounts(data);
-          console.log("responseGetAllItem: ", responseGetAllItem);
-          setOriginalData([...responseGetAllItem.data]);
           setProcessingData([...responseGetAllItem.data]);
           setTotalRows(responseGetAllItem.totalRows);
         } catch (error) {
@@ -84,7 +84,7 @@ const Account = () => {
     };
 
     fetchItems();
-  }, [userData, pageIndex, pageSize, searchText]);
+  }, [searchText, orderBy, isAscending, pageIndex, pageSize]);
 
   const handlePageChange = (page, pageSize) => {
     setPageIndex(page);
@@ -112,6 +112,13 @@ const Account = () => {
       ),
     },
     {
+      title: "Age",
+      dataIndex: "age",
+      key: "age",
+      render: (age) =>
+        age ? age : <i className="text-xs opacity-70">(Not updated yet)</i>,
+    },
+    {
       title: "Phone number",
       dataIndex: "phone",
       key: "phone",
@@ -123,7 +130,11 @@ const Account = () => {
       dataIndex: "gender",
       key: "gender",
       render: (gender) =>
-        gender ? gender : <i className="text-xs opacity-70">(Not updated yet)</i>,
+        gender ? (
+          gender
+        ) : (
+          <i className="text-xs opacity-70">(Not updated yet)</i>
+        ),
     },
     {
       title: "Address",
@@ -137,13 +148,13 @@ const Account = () => {
         ),
     },
     {
-      title: "Hội viên",
-      dataIndex: "membership",
-      key: "membership",
-      render: (membership) => membership,
+      title: "Role",
+      dataIndex: "role",
+      key: "role",
+      render: (role) => role,
     },
     {
-      title: "Hành động",
+      title: "Actions",
       key: "actions",
       align: "center",
       render: (text, record) => {
@@ -178,8 +189,55 @@ const Account = () => {
   ];
 
   return (
-    <div>
-      <div className="mt-8">
+    <div className="p-4">
+      <div className="my-8 flex items-center">
+        <div className="flex items-center">
+          <Text strong className="w-30">
+            Search by:
+          </Text>
+          <Select
+            value={typeSearch}
+            onChange={(value) => setTypeSearch(value)}
+            className="w-48 ml-5"
+          >
+            <Option value="email">Email</Option>
+            <Option value="fullName">Full Name</Option>
+          </Select>
+          <Input
+            placeholder={`Enter the ${typeSearch} you want to find`}
+            value={searchText}
+            onChange={(e) => setSearchText(e.target.value)}
+            className="w-72 ml-2"
+          />
+        </div>
+
+        <div className="flex items-center ml-4">
+          <Text strong>Order by:</Text>
+          <Select
+            defaultValue=""
+            className="w-48 ml-4"
+            onChange={(value) => setOrderBy(value)}
+          >
+            <Option value="">Default</Option>
+            <Option value="fullName">Full name</Option>
+            <Option value="email">Email</Option>
+          </Select>
+        </div>
+
+        <div className="flex items-center ml-4">
+          <Text strong>Sort direction:</Text>
+          <Select
+            defaultValue="true"
+            className="w-36 ml-2"
+            onChange={(value) => setIsAscending(value === "true")}
+          >
+            <Option value="true">Ascending</Option>
+            <Option value="false">Descending</Option>
+          </Select>
+        </div>
+      </div>
+
+      <div>
         <Spin spinning={isLoading}>
           <Table
             columns={columns}
