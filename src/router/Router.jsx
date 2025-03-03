@@ -17,6 +17,7 @@ import ManageAccount from "../pages/admin/ManageAccount";
 import ManageTransaction from "../pages/admin/ManageTransaction";
 import ManageBooking from "../pages/admin/ManageBooking";
 import Account from "../pages/account";
+import ManageService from "../pages/admin/ManageService";
 
 const Router = () => {
   return (
@@ -28,7 +29,7 @@ const Router = () => {
       </Route> */}
 
       <Route element={<AuthLayout />}>
-        <Route path="/" element={<Home />} />     
+        <Route path="/" element={<Home />} />
         <Route path="/account" element={<Account />} />
         <Route path="/account/change-password" element={<ChangePassword />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
@@ -44,6 +45,7 @@ const Router = () => {
       <Route element={<AdminLayout />}>
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/accounts" element={<ManageAccount />} />
+        <Route path="/services" element={<ManageService />} />
         <Route path="/transactions" element={<ManageTransaction />} />
         <Route path="/bookings" element={<ManageBooking />} />
       </Route>
