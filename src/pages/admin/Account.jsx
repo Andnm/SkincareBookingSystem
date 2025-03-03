@@ -26,15 +26,14 @@ import { PiPlus } from "react-icons/pi";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { userSelector } from "../../redux/selectors/selector";
-import SearchFilterHeader from "../../components/manage/SearchFilterHeader";
 import {
   getAllAccounts,
-  getAllUserByAdmin,
 } from "../../services/user.services";
 import {
   generateFallbackAvatar,
   handleActionNotSupport,
 } from "../../utils/helpers";
+import CreateAccount from "../../components/manage/CreateAccountButton";
 
 const { Option } = Select;
 const { confirm } = Modal;
@@ -65,7 +64,7 @@ const Account = () => {
             pageSize: pageSize,
             orderBy: orderBy,
             isAscending: isAscending,
-            email: typeSearch === "email" ? searchText : "", 
+            email: typeSearch === "email" ? searchText : "",
             fullName: typeSearch === "fullName" ? searchText : "",
             status: "",
           };
@@ -190,51 +189,58 @@ const Account = () => {
 
   return (
     <div className="p-4">
-      <div className="my-8 flex items-center">
+      <div className="my-8 flex items-center justify-between">
         <div className="flex items-center">
-          <Text strong className="w-30">
-            Search by:
-          </Text>
-          <Select
-            value={typeSearch}
-            onChange={(value) => setTypeSearch(value)}
-            className="w-48 ml-5"
-          >
-            <Option value="email">Email</Option>
-            <Option value="fullName">Full Name</Option>
-          </Select>
-          <Input
-            placeholder={`Enter the ${typeSearch} you want to find`}
-            value={searchText}
-            onChange={(e) => setSearchText(e.target.value)}
-            className="w-72 ml-2"
-          />
+          <div className="flex items-center">
+            <Text strong className="w-30">
+              Search by:
+            </Text>
+            <Select
+              value={typeSearch}
+              onChange={(value) => setTypeSearch(value)}
+              className="w-48"
+            >
+              <Option value="email">Email</Option>
+              <Option value="fullName">Full Name</Option>
+            </Select>
+            <Input
+              placeholder={`Enter the ${typeSearch} you want to find`}
+              value={searchText}
+              onChange={(e) => setSearchText(e.target.value)}
+              className="w-72 "
+              style={{ marginLeft: "10px" }}
+            />
+          </div>
+
+          <div className="flex items-center ml-4">
+            <Text strong>Order by:</Text>
+            <Select
+              defaultValue=""
+              className="w-48 ml-4"
+              onChange={(value) => setOrderBy(value)}
+              style={{ marginLeft: "10px" }}
+            >
+              <Option value="">Default</Option>
+              <Option value="fullName">Full name</Option>
+              <Option value="email">Email</Option>
+            </Select>
+          </div>
+
+          <div className="flex items-center ml-4">
+            <Text strong>Sort direction:</Text>
+            <Select
+              defaultValue="true"
+              className="w-36 ml-2"
+              onChange={(value) => setIsAscending(value === "true")}
+              style={{ marginLeft: "10px" }}
+            >
+              <Option value="true">Ascending</Option>
+              <Option value="false">Descending</Option>
+            </Select>
+          </div>
         </div>
 
-        <div className="flex items-center ml-4">
-          <Text strong>Order by:</Text>
-          <Select
-            defaultValue=""
-            className="w-48 ml-4"
-            onChange={(value) => setOrderBy(value)}
-          >
-            <Option value="">Default</Option>
-            <Option value="fullName">Full name</Option>
-            <Option value="email">Email</Option>
-          </Select>
-        </div>
-
-        <div className="flex items-center ml-4">
-          <Text strong>Sort direction:</Text>
-          <Select
-            defaultValue="true"
-            className="w-36 ml-2"
-            onChange={(value) => setIsAscending(value === "true")}
-          >
-            <Option value="true">Ascending</Option>
-            <Option value="false">Descending</Option>
-          </Select>
-        </div>
+        <CreateAccount />
       </div>
 
       <div>
