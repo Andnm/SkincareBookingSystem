@@ -31,7 +31,7 @@ export const createSlotByManager = async (data) => {
 
 export const getAllBookings = async (data) => {
   try {
-    const response = await axiosInstance.get(`/api/v1/bookings/get-all`, {
+    const response = await axiosInstance.get(`/api/v1/bookings`, {
       params: data,
     });
     return response.data;
@@ -43,18 +43,7 @@ export const getAllBookings = async (data) => {
 export const getBookingDetailById = async (id) => {
   try {
     const response = await axiosInstance.get(
-      `/api/v1/bookings/get-detail/${id}`
-    );
-    return response.data;
-  } catch (error) {
-    throw error;
-  }
-};
-
-export const getBookingDetailByCustomerId = async (id) => {
-  try {
-    const response = await axiosInstance.get(
-      `/api/v1/bookings/get-all-booking-of-customer/${id}`
+      `/api/v1/bookings/${id}`
     );
     return response.data;
   } catch (error) {

@@ -16,8 +16,6 @@ import { toast } from "react-toastify";
 import { useSelector } from "react-redux";
 import { userSelector } from "../../redux/selectors/selector";
 import { getAllTransactions } from "../../services/transaction.services";
-import { handleActionNotSupport } from "../../utils/helpers";
-import { IdcardOutlined } from "@ant-design/icons";
 import TransactionDetailModal from "../../components/manage/TransactionDetailModal";
 
 const { Option } = Select;
