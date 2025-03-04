@@ -48,7 +48,7 @@ const LoginModal = ({ setIsLoginModal, triggerCancel }) => {
       const response = await dispatch(loginThunk(formData));
 
       if (loginThunk.rejected.match(response)) {
-        toastError(response?.payload);
+        toast.error(response.payload.response.data.message);
       } else {
         const roleName = response?.payload?.account?.roleName;
 
@@ -136,9 +136,8 @@ const LoginModal = ({ setIsLoginModal, triggerCancel }) => {
 
           <div className="mb-2 mt-5">
             <button
-              className={`cursor-pointer w-full bg-blue-800 text-white py-4 font-semibold hover:bg-blue-900 disabled:bg-gray-400 ${
-                isLoading ? "disabled:cursor-wait" : ""
-              }`}
+              className={`cursor-pointer w-full bg-blue-800 text-white py-4 font-semibold hover:bg-blue-900 disabled:bg-gray-400 ${isLoading ? "disabled:cursor-wait" : ""
+                }`}
               disabled={isLoading}
               type="submit"
               onClick={(e) => {

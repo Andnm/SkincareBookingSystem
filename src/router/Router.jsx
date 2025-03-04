@@ -3,6 +3,7 @@ import Home from "../pages/home/Home";
 import NotFound from "../pages/notFound/NotFound";
 import AuthLayout from "../components/layout/AuthLayout";
 import ChangePassword from "../pages/account/ChangePassword";
+import BookingHistory from "../pages/account/BookingHistory";
 import Dashboard from "../pages/admin/Dashboard";
 import AdminLayout from "../components/layout/AdminLayout";
 import ForgotPassword from "../pages/forgotPassword/ForgotPassword";
@@ -21,6 +22,7 @@ import ManageService from "../pages/admin/ManageService";
 import ManageWorkingSchedule from "../pages/admin/ManageWorkingSchedule";
 import Setting from "../pages/admin/Setting";
 import WorkingSchedule from "../pages/account/WorkingSchedule";
+import ServiceDetail from "../pages/serviceDetail/ServiceDetail";
 
 const Router = () => {
   return (
@@ -36,8 +38,10 @@ const Router = () => {
         <Route path="/account" element={<Account />} />
         <Route path="/account/change-password" element={<ChangePassword />} />
         <Route path="/account-working-schedule" element={<WorkingSchedule />} />
+        <Route path="/account-history" element={<BookingHistory />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/services" element={<ServicesPage />} />
+        <Route path="/services/:id" element={<ServiceDetail />} />
         <Route path="/about-us" element={<AboutUs />} />
         <Route path="/test" element={<TestPage />} />
         <Route path="/skin-therapist" element={<SkinTherapist />} />

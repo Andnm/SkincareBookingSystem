@@ -55,7 +55,7 @@ const RegisterModal = ({ setIsLoginModal, triggerCancel }) => {
     try {
       const responseRegister = await dispatch(registerThunk(data));
       if (registerThunk.rejected.match(responseRegister)) {
-        toast.error(responseRegister.payload || responseRegister.error.message);
+        toast.error(responseRegister.payload.response.data.message);
       } else {
         const credentials = {
           email: formData.email,
@@ -64,7 +64,7 @@ const RegisterModal = ({ setIsLoginModal, triggerCancel }) => {
         const responseLogin = await dispatch(loginThunk(credentials));
 
         if (loginThunk.rejected.match(responseLogin)) {
-          toast.error(responseLogin.payload || responseLogin.error.message);
+          toast.error(responseLogin.payload.response.data.message);
         } else {
           setFormData({
             fullName: "",

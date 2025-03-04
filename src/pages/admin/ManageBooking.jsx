@@ -61,6 +61,7 @@ const ManageBooking = () => {
           };
 
           const responseGetAllBookings = await getAllBookings(params);
+          console.log("responseGetAllBookings: ", responseGetAllBookings)
           setBookingData([...responseGetAllBookings.data]);
           setTotalRows(responseGetAllBookings.totalRows);
         } catch (error) {
