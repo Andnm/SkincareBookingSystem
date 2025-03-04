@@ -1,14 +1,39 @@
 import React, { useState } from 'react';
-import { Button, Card, List, message, Spin, Empty, Modal, Tag } from 'antd';
-import { EditOutlined, DeleteOutlined, ClockCircleOutlined, CheckCircleOutlined } from '@ant-design/icons';
-import { getAllServiceType, getAllSkinIssue, getAllSkinType } from '../../services/service.services';
+import { 
+  Button, 
+  Card, 
+  List, 
+  Modal, 
+  Form, 
+  Input, 
+  Select, 
+  Tag, 
+  Empty 
+} from 'antd';
+import { 
+  EditOutlined, 
+  DeleteOutlined, 
+  ClockCircleOutlined, 
+  CheckCircleOutlined, 
+  PlusOutlined 
+} from '@ant-design/icons';
+import { 
+  getAllServiceType, 
+  getAllSkinIssue, 
+  getAllSkinType, 
+} from '../../services/service.services';
 import { toast } from 'react-toastify';
-import { getAllSlots } from '../../services/workingSchedule.services';
+import { getAllSlots, createSlot } from '../../services/workingSchedule.services';
+import { handleActionNotSupport } from '../../utils/helpers';
+
+const { Option } = Select;
 
 const Setting = () => {
     const [listData, setListData] = useState([]);
     const [activeButton, setActiveButton] = useState(null);
     const [loading, setLoading] = useState(false);
+    const [isAddModalVisible, setIsAddModalVisible] = useState(false);
+    const [addForm] = Form.useForm();
 
     const fetchData = async (apiCall, buttonType) => {
         try {
@@ -29,6 +54,49 @@ const Setting = () => {
             setListData([]);
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handleAddItem = async () => {
+        try {
+            await addForm.validateFields();
+            const formValues = addForm.getFieldsValue();
+            
+            let createApiCall;
+            switch (activeButton) {
+                // case 'Skin Issues':
+                //     createApiCall = createSkinIssue;
+                //     break;
+                // case 'Skin Type':
+                //     createApiCall = createSkinType;
+                //     break;
+                // case 'Service Type':
+                //     createApiCall = createServiceType;
+                //     break;
+                case 'Slots':
+                    createApiCall = createSlot;
+                    break;
+                default:
+                    return;
+            }
+
+            const response = await createApiCall(formValues);
+            
+            // Refresh the list after adding
+            await fetchData(
+                activeButton === 'Skin Issues' ? getAllSkinIssue :
+                activeButton === 'Skin Type' ? getAllSkinType :
+                activeButton === 'Service Type' ? getAllServiceType :
+                activeButton === 'Slots' ? getAllSlots : null,
+                activeButton
+            );
+
+            toast.success(`${activeButton} added successfully`);
+            setIsAddModalVisible(false);
+            addForm.resetFields();
+        } catch (error) {
+            toast.error(`Failed to add ${activeButton}`);
+            console.error(error);
         }
     };
 
@@ -61,6 +129,69 @@ const Setting = () => {
     const handleSkinTypeClick = () => fetchData(getAllSkinType, 'Skin Type');
     const handleServiceTypeClick = () => fetchData(getAllServiceType, 'Service Type');
     const handleSlotsClick = () => fetchData(getAllSlots, 'Slots');
+
+    const renderAddModal = () => {
+        if (!activeButton) return null;
+
+        const modalTitle = `Add New ${activeButton}`;
+        
+        const renderFormFields = () => {
+            switch (activeButton) {
+                case 'Slots':
+                    return (
+                        <>
+                            <Form.Item
+                                name="slotNumber"
+                                label="Slot Number"
+                                rules={[{ required: true, message: 'Please input slot number!' }]}
+                            >
+                                <Input type="number" />
+                            </Form.Item>
+                            <Form.Item
+                                name="startTime"
+                                label="Start Time"
+                                rules={[{ required: true, message: 'Please input start time!' }]}
+                            >
+                                <Input placeholder="HH:MM" />
+                            </Form.Item>
+                            <Form.Item
+                                name="endTime"
+                                label="End Time"
+                                rules={[{ required: true, message: 'Please input end time!' }]}
+                            >
+                                <Input placeholder="HH:MM" />
+                            </Form.Item>
+                        </>
+                    );
+                default:
+                    return (
+                        <Form.Item
+                            name="name"
+                            label="Name"
+                            rules={[{ required: true, message: 'Please input name!' }]}
+                        >
+                            <Input />
+                        </Form.Item>
+                    );
+            }
+        };
+
+        return (
+            <Modal
+                title={modalTitle}
+                open={isAddModalVisible}
+                onOk={handleAddItem}
+                onCancel={() => {
+                    setIsAddModalVisible(false);
+                    addForm.resetFields();
+                }}
+            >
+                <Form form={addForm} layout="vertical">
+                    {renderFormFields()}
+                </Form>
+            </Modal>
+        );
+    };
 
     const renderContent = () => {
         if (loading) {
@@ -199,7 +330,6 @@ const Setting = () => {
 
     return (
         <div className="max-w-xl mx-auto px-4 py-6">
-
             <div className="flex justify-center space-x-4 mb-6">
                 {buttonConfigs.map(({ key, onClick }) => (
                     <Button
@@ -214,12 +344,27 @@ const Setting = () => {
             </div>
 
             <Card
-                title={activeButton ? `${activeButton} List` : 'Select a Category'}
+                title={
+                    <div className="flex justify-between items-center">
+                        <span>{activeButton ? `${activeButton} List` : 'Select a Category'}</span>
+                        {activeButton && (
+                            <Button 
+                                type="primary" 
+                                icon={<PlusOutlined />} 
+                                onClick={() => setIsAddModalVisible(true)}
+                            >
+                                Add {activeButton}
+                            </Button>
+                        )}
+                    </div>
+                }
                 bordered={true}
                 className="shadow-md"
             >
                 {renderContent()}
             </Card>
+
+            {renderAddModal()}
         </div>
     );
 };
