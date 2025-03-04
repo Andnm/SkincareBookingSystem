@@ -82,7 +82,6 @@ const Setting = () => {
 
             const response = await createApiCall(formValues);
             
-            // Refresh the list after adding
             await fetchData(
                 activeButton === 'Skin Issues' ? getAllSkinIssue :
                 activeButton === 'Skin Type' ? getAllSkinType :
