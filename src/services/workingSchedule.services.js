@@ -1,10 +1,8 @@
 import axiosInstance from "./axiosInstance";
 
-export const getAllWorkingSchedule = async (data) => {
+export const getAllWorkingSchedule = async () => {
   try {
-    const response = await axiosInstance.get(`/api/v1/working-schedules`, {
-      params: data,
-    });
+    const response = await axiosInstance.get(`/api/v1/working-schedules`);
     return response.data;
   } catch (error) {
     throw error;
@@ -48,6 +46,24 @@ export const registerWorkingSchedule = async (data) => {
       `/api/v1/working-schedules/sign-up`,
       data
     );
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const getAllSlots = async () => {
+  try {
+    const response = await axiosInstance.get(`/api/v1/slots`);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const createSlot = async () => {
+  try {
+    const response = await axiosInstance.post(`/api/v1/slots`);
     return response.data;
   } catch (error) {
     throw error;

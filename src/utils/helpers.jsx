@@ -4,9 +4,10 @@ import { RiBookletLine, RiCalendarScheduleLine } from "react-icons/ri";
 import { MdOutlineMedicalServices, MdOutlinePassword } from "react-icons/md";
 import { AiOutlineDashboard } from "react-icons/ai";
 import { toast } from "react-toastify";
-import { ROLE_MANAGER, ROLE_STAFF } from "./constants";
+import { ROLE_CUSTOMER, ROLE_MANAGER, ROLE_SKINTHERAPIST, ROLE_STAFF } from "./constants";
 import { GrTransaction } from "react-icons/gr";
 import { GoPerson } from "react-icons/go";
+import { IoSettingsOutline } from "react-icons/io5";
 
 export function formatDateTimeVN(isoString) {
   const date = new Date(isoString);
@@ -24,13 +25,11 @@ export function formatDateTimeVN(isoString) {
   const formatter = new Intl.DateTimeFormat("vi-VN", options);
   const formattedParts = formatter.formatToParts(date);
 
-  const time = `${formattedParts.find((p) => p.type === "hour").value}:${
-    formattedParts.find((p) => p.type === "minute").value
-  }`;
+  const time = `${formattedParts.find((p) => p.type === "hour").value}:${formattedParts.find((p) => p.type === "minute").value
+    }`;
 
-  const dateStr = `${formattedParts.find((p) => p.type === "day").value}/${
-    formattedParts.find((p) => p.type === "month").value
-  }/${formattedParts.find((p) => p.type === "year").value}`;
+  const dateStr = `${formattedParts.find((p) => p.type === "day").value}/${formattedParts.find((p) => p.type === "month").value
+    }/${formattedParts.find((p) => p.type === "year").value}`;
 
   return `${time} | ${dateStr}`;
 }
@@ -72,38 +71,33 @@ export const sliderMenu = [
     label: "Transactions",
     roles: [ROLE_MANAGER, ROLE_STAFF],
   },
+  {
+    key: "settings",
+    icon: <IoSettingsOutline />,
+    label: "Settings",
+    roles: [ROLE_MANAGER],
+  },
+  //customer, skin therapist
+  {
+    key: "/account-history",
+    icon: <FaHistory />,
+    label: "History of Booking",
+    roles: [ROLE_CUSTOMER],
+  },
+  {
+    key: "/account-working-schedule",
+    icon: <FaCalendarAlt />,
+    label: "Working Schedule",
+    roles: [ROLE_SKINTHERAPIST],
+  }
 ];
+
+
 
 export const filterMenuByRole = (menu, role) => {
   if (!role) return [];
   return menu.filter((item) => item.roles.some((r) => r.name === role.name));
 };
-
-export const customer_sidebar_list = [
-  {
-    section: "Account information",
-    icon: <FaUser />,
-    isDropdown: true,
-    children: [
-      { label: "Profile", path: "/account", icon: <FaInfo /> },
-      {
-        label: "Change password",
-        path: "/account/change-password",
-        icon: <MdOutlinePassword />,
-      },
-    ],
-  },
-  {
-    label: "History of Skin Care",
-    path: "/account-history",
-    icon: <FaHistory />,
-  },
-  {
-    label: "Schedule Booked",
-    path: "/account-schedule",
-    icon: <FaCalendarAlt />,
-  },
-];
 
 export function useScrollToTop() {
   useEffect(() => {

@@ -19,6 +19,8 @@ import ManageBooking from "../pages/admin/ManageBooking";
 import Account from "../pages/account";
 import ManageService from "../pages/admin/ManageService";
 import ManageWorkingSchedule from "../pages/admin/ManageWorkingSchedule";
+import Setting from "../pages/admin/Setting";
+import WorkingSchedule from "../pages/account/WorkingSchedule";
 
 const Router = () => {
   return (
@@ -33,6 +35,7 @@ const Router = () => {
         <Route path="/" element={<Home />} />
         <Route path="/account" element={<Account />} />
         <Route path="/account/change-password" element={<ChangePassword />} />
+        <Route path="/account-working-schedule" element={<WorkingSchedule />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/services" element={<ServicesPage />} />
         <Route path="/about-us" element={<AboutUs />} />
@@ -50,6 +53,7 @@ const Router = () => {
         <Route path="/manage-transactions" element={<ManageTransaction />} />
         <Route path="/manage-bookings" element={<ManageBooking />} />
         <Route path="/manage-working-schedule" element={<ManageWorkingSchedule />} />
+        <Route path="/settings" element={<Setting />} />
       </Route>
       <Route path="/*" element={<NotFound />} />
     </Routes>

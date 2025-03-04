@@ -14,7 +14,7 @@ const Account = () => {
   const [formData, setFormData] = useState({
     fullName: userData?.user?.fullName || "",
     email: userData?.user?.email || "",
-    phone_number: userData?.user?.phone_number || "",
+    phone: userData?.user?.phone || "",
     address: userData?.user?.address || "",
     avatar_url: userData?.user?.avatar_url || "",
   });
@@ -133,11 +133,11 @@ const Account = () => {
                 <div className="col-span-2 flex items-center">
                   <input
                     type="text"
-                    value={formData.phone_number}
+                    value={formData.phone}
                     onChange={(e) =>
                       setFormData({
                         ...formData,
-                        phone_number: e.target.value,
+                        phone: e.target.value,
                       })
                     }
                     className="p-2 border rounded w-full"

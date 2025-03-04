@@ -18,6 +18,7 @@ import logo from "../../../assets/images/logo-remove-bg.png";
 import { logoutUser } from "../../../redux/reducers/userReducer";
 import { getCurrentUserThunk } from "../../../redux/actions/userThunk";
 import { ROLE_MANAGER, ROLE_CUSTOMER } from "../../../utils/constants";
+import { getAllNotifications } from "../../../services/notification.services";
 
 const HeaderManagePage = () => {
   const navigate = useNavigate();
@@ -40,7 +41,7 @@ const HeaderManagePage = () => {
           console.log(
             getCurrentUserAction.payload || getCurrentUserAction.error.message
           );
-        } 
+        }
       }
     };
     handleRelogin();
@@ -103,26 +104,22 @@ const HeaderManagePage = () => {
   };
 
   useEffect(() => {
-    // const fetchNotifications = async () => {
-    //   if (userData?.user?.token) {
-    //     try {
-    //       const responseGetNotifications =
-    //         await notification.getAllNotifications(userData?.user.token);
-    //       const adminNotifications = responseGetNotifications
-    //         .filter((noti) => noti.noti_type === NotificationEnum.TO_ADMIN)
-    //         .reverse();
-    //       setNotifications(adminNotifications);
-    //       setNewNotifyCount(
-    //         adminNotifications.filter((noti) => noti.is_new).length
-    //       );
-    //     } catch (error) {
-    //       toastError(error);
-    //       console.error("Có lỗi khi tải dữ liệu noti:", error);
-    //     } finally {
-    //     }
-    //   }
-    // };
-    // fetchNotifications();
+    const fetchNotifications = async () => {
+      if (userData) {
+        try {
+          const responseGetNotifications =
+            await getAllNotifications();
+
+          console.log("responseGetNotifications: ", responseGetNotifications)
+
+        } catch (error) {
+          toastError(error);
+          console.error("Có lỗi khi tải dữ liệu noti:", error);
+        } finally {
+        }
+      }
+    };
+    fetchNotifications();
   }, []);
 
   useEffect(() => {
@@ -205,7 +202,7 @@ const HeaderManagePage = () => {
                 </div>
                 <InfiniteScroll
                   dataLength={notifications?.length}
-                  next={() => {}}
+                  next={() => { }}
                   height={"36rem"}
                   style={{
                     display: "flex",
@@ -236,9 +233,8 @@ const HeaderManagePage = () => {
                             <span className="text-gray-900">{`${noti.noti_describe} `}</span>
                           </div>
                           <div
-                            className={`text-xs ${
-                              !noti.is_new ? "text-gray-600" : "text-blue-600"
-                            } `}
+                            className={`text-xs ${!noti.is_new ? "text-gray-600" : "text-blue-600"
+                              } `}
                           >
                             {formatDateTimeVN(noti.created_at)}
                           </div>

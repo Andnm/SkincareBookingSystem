@@ -1,148 +1,143 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { Calendar, Card, Typography, Button, Badge, message } from 'antd';
+import { LeftOutlined, RightOutlined } from '@ant-design/icons';
+import dayjs from 'dayjs';
+import 'dayjs/locale/vi';
+import { getAllWorkingSchedule } from '../../services/workingSchedule.services';
+
+dayjs.locale('vi');
 
 const ManageWorkingSchedule = () => {
-  const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
-  const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
-  
-  const scheduleData = {
-    '2025-03-10': [
-      { id: 1, title: 'Slot 1: Họp nhóm' },
-      { id: 2, title: 'Slot 2: Gặp khách hàng' },
-      { id: 3, title: 'Slot 3: Đánh giá dự án' }
-    ],
-    '2025-03-15': [
-      { id: 1, title: 'Slot 1: Phỏng vấn' },
-      { id: 2, title: 'Slot 2: Hội thảo' }
-    ],
-    '2025-03-20': [
-      { id: 1, title: 'Slot 1: Bảo trì hệ thống' },
-      { id: 2, title: 'Slot 2: Đào tạo nhân viên' },
-      { id: 3, title: 'Slot 3: Tổng kết tuần' }
-    ]
-  };
-  
-  const getDaysInMonth = (month, year) => {
-    return new Date(year, month + 1, 0).getDate();
-  };
-  
-  const getFirstDayOfMonth = (month, year) => {
-    return new Date(year, month, 1).getDay();
-  };
-  
-  const changeMonth = (offset) => {
-    let newMonth = currentMonth + offset;
-    let newYear = currentYear;
-    
-    if (newMonth > 11) {
-      newMonth = 0;
-      newYear += 1;
-    } else if (newMonth < 0) {
-      newMonth = 11;
-      newYear -= 1;
-    }
-    
-    setCurrentMonth(newMonth);
-    setCurrentYear(newYear);
-  };
-  
-  const formatDate = (day) => {
-    const month = currentMonth + 1;
-    return `${currentYear}-${month < 10 ? '0' + month : month}-${day < 10 ? '0' + day : day}`;
-  };
-  
-  const months = [
-    'Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4', 'Tháng 5', 'Tháng 6',
-    'Tháng 7', 'Tháng 8', 'Tháng 9', 'Tháng 10', 'Tháng 11', 'Tháng 12'
-  ];
-  
-  const weekdays = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'];
-  
-  const renderCalendar = () => {
-    const daysInMonth = getDaysInMonth(currentMonth, currentYear);
-    const firstDay = getFirstDayOfMonth(currentMonth, currentYear);
-    
-    const blanks = [];
-    for (let i = 0; i < firstDay; i++) {
-      blanks.push(<div key={`blank-${i}`} className="p-2 bg-gray-100 border border-gray-200"></div>);
-    }
-    
-    const days = [];
-    for (let day = 1; day <= daysInMonth; day++) {
-      const dateStr = formatDate(day);
-      const hasSchedule = scheduleData[dateStr] && scheduleData[dateStr].length > 0;
+  const [currentDate, setCurrentDate] = useState(dayjs());
+  const [scheduleData, setScheduleData] = useState({});
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    fetchWorkingSchedules();
+  }, []);
+
+  const fetchWorkingSchedules = async () => {
+    try {
+      setLoading(true);
+      const response = await getAllWorkingSchedule();
       
-      days.push(
-        <div key={day} className="p-2 border border-gray-200 min-h-24">
-          <div className="font-bold text-sm">{day}</div>
-          {hasSchedule && (
-            <div className="mt-1">
-              {scheduleData[dateStr].map(slot => (
-                <div key={slot.id} className="text-xs bg-blue-100 p-1 mb-1 rounded">
-                  {slot.title}
-                </div>
-              ))}
-            </div>
-          )}
+      const formattedSchedules = response?.data?.reduce((acc, schedule) => {
+        const [day, month, year] = schedule.workingDate.split('/');
+        const formattedDate = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+        
+        if (!acc[formattedDate]) {
+          acc[formattedDate] = [];
+        }
+        
+        acc[formattedDate].push({
+          ...schedule,
+          title: `Slot ${schedule.slotNumber}: ${schedule.startTime} - ${schedule.endTime}`
+        });
+        
+        return acc;
+      }, {});
+
+      setScheduleData(formattedSchedules);
+    } catch (error) {
+      message.error('Failed to fetch working schedules');
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+  const dateCellRender = (value) => {
+    const dateString = value.format('YYYY-MM-DD');
+    const schedules = scheduleData[dateString];
+    
+    if (schedules) {
+      return (
+        <div>
+          {schedules.map(slot => (
+            <Badge 
+              key={slot.id} 
+              status="processing" 
+              text={slot.title} 
+              className="block mb-1 text-xs"
+            />
+          ))}
         </div>
       );
     }
+    return null;
+  };
+  
+  const monthCellRender = (value) => {
+    const month = value.month();
+    const year = value.year();
     
-    const totalSlots = [...blanks, ...days];
-    const rows = [];
-    let cells = [];
-    
-    totalSlots.forEach((cell, i) => {
-      if (i % 7 === 0 && i > 0) {
-        rows.push(<div key={`row-${i}`} className="grid grid-cols-7">{cells}</div>);
-        cells = [];
+    let totalSchedules = 0;
+    Object.keys(scheduleData).forEach(dateStr => {
+      const scheduleDate = dayjs(dateStr);
+      if (scheduleDate.year() === year && scheduleDate.month() === month) {
+        totalSchedules += scheduleData[dateStr].length;
       }
-      cells.push(cell);
     });
     
-    if (cells.length > 0) {
-      while (cells.length < 7) {
-        cells.push(<div key={`empty-${cells.length}`} className="p-2 bg-gray-100 border border-gray-200"></div>);
-      }
-      rows.push(<div key="last-row" className="grid grid-cols-7">{cells}</div>);
-    }
-    
-    return rows;
+    return totalSchedules > 0 ? (
+      <div className="notes-month">
+        <Typography.Text type="secondary">
+          {totalSchedules} tasks
+        </Typography.Text>
+      </div>
+    ) : null;
+  };
+  
+  const handlePanelChange = (date) => {
+    setCurrentDate(date);
+  };
+  
+  const handleMonthChange = (offset) => {
+    const newDate = currentDate.clone().add(offset, 'month');
+    setCurrentDate(newDate);
+  };
+  
+  const getEnglishMonthName = (date) => {
+    const monthNames = [
+      'January', 'February', 'March', 'April', 'May', 'June',
+      'July', 'August', 'September', 'October', 'November', 'December'
+    ];
+    return monthNames[date.month()];
   };
   
   return (
-    <div className="p-4 max-w-4xl mx-auto bg-white rounded-lg shadow-md">
-      <h1 className="text-2xl font-bold mb-4 text-center">Quản lý lịch làm việc</h1>
-      
-      <div className="flex justify-between items-center mb-4">
-        <button 
-          onClick={() => changeMonth(-1)}
-          className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
-        >
-          &lt; Tháng trước
-        </button>
-        
-        <div className="text-xl font-bold">
-          {months[currentMonth]} {currentYear}
+    <Card 
+      title={
+        <div className="flex justify-between items-center">
+          <Button 
+            onClick={() => handleMonthChange(-1)}
+            loading={loading}
+          >
+            <LeftOutlined /> Previous Month
+          </Button>
+          
+          <Typography.Title level={4} style={{ margin: 0 }}>
+            {getEnglishMonthName(currentDate)} {currentDate.year()}
+          </Typography.Title>
+          
+          <Button 
+            onClick={() => handleMonthChange(1)}
+            loading={loading}
+          >
+            Next Month <RightOutlined />
+          </Button>
         </div>
-        
-        <button 
-          onClick={() => changeMonth(1)}
-          className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
-        >
-          Tháng sau &gt;
-        </button>
-      </div>
-      
-      <div className="grid grid-cols-7 bg-gray-200 font-bold">
-        {weekdays.map(day => (
-          <div key={day} className="p-2 text-center">{day}</div>
-        ))}
-      </div>
-      
-      <div className="calendar-body">
-        {renderCalendar()}
-      </div>
-    </div>
+      }
+    >
+      <Calendar 
+        value={currentDate}
+        dateCellRender={dateCellRender}
+        monthCellRender={monthCellRender}
+        onPanelChange={handlePanelChange}
+        headerRender={() => null} 
+        loading={loading}
+      />
+    </Card>
   );
 };
 

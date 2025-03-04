@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { HiOutlineLogout } from "react-icons/hi";
 import { Avatar, Modal } from "antd";
@@ -15,6 +15,7 @@ import {
   menuItemsHeader,
   ROLE_MANAGER,
   ROLE_CUSTOMER,
+  ROLE_STAFF,
 } from "../../../utils/constants";
 import { FaUser } from "react-icons/fa";
 import { IoHome } from "react-icons/io5";
@@ -24,6 +25,7 @@ import { BiCalendar } from "react-icons/bi";
 
 function Header() {
   const navigate = useNavigate();
+  const location = useLocation();
   const dispatch = useDispatch();
   const user = useSelector(userSelector);
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -41,16 +43,15 @@ function Header() {
           );
         } else {
           const userRole = getCurrentUserAction?.payload?.role;
+          const currentPath = location.pathname;
 
           switch (userRole) {
             case ROLE_MANAGER:
+            case ROLE_STAFF:
               navigate("/dashboard");
               break;
-            case ROLE_CUSTOMER:
-              navigate("/");
-              break;
             default:
-              navigate("/");
+              navigate(currentPath);
           }
         }
       }
@@ -90,8 +91,7 @@ function Header() {
                 key={index}
                 to={item.to}
                 className={({ isActive }) =>
-                  `menu-item font-semibold hover:underline ${
-                    isActive ? "text-blue-800 underline" : "text-black"
+                  `menu-item font-semibold hover:underline ${isActive ? "text-blue-800 underline" : "text-black"
                   }`
                 }
               >
