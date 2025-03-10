@@ -11,6 +11,15 @@ export const getAllAccounts = async (data) => {
   }
 };
 
+export const updateAccounts = async (data) => {
+  try {
+    const response = await axiosInstance.put(`/api/v1/accounts`, data);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+}
+
 export const getAllSkinTherapists = async (data) => {
   try {
     const response = await axiosInstance.get(`/api/v1/skin-therapists/get-all`, {
@@ -22,9 +31,14 @@ export const getAllSkinTherapists = async (data) => {
   }
 };
 
-export const createAccountByManager = async (data) => {
+export const createAccountByManager = async (formData) => {
   try {
-    const response = await axiosInstance.post(`/api/v1/accounts/provide`, data);
+    const response = await axiosInstance.post(`/api/v1/accounts/provide`,  formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
     return response.data;
   } catch (error) {
     throw error;

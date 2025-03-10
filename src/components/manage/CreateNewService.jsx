@@ -79,7 +79,6 @@ const CreateNewService = ({ onServiceCreated }) => {
                         formData.append("Images", file.originFileObj);
                     });
 
-                    // Thêm từng ID vào FormData với cùng tên key
                     if (values.ServiceSkinIssues && values.ServiceSkinIssues.length > 0) {
                         values.ServiceSkinIssues.forEach(id => {
                             formData.append("ServiceSkinIssues", id);

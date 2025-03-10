@@ -1,15 +1,17 @@
 import React, { useState } from "react";
-import { Modal, Button, Input, Select, Form, message } from "antd";
+import { Modal, Button, Input, Select, Form, message, Upload } from "antd";
 import { ROLE_SKINTHERAPIST, ROLE_STAFF } from "../../utils/constants";
-import { PlusOutlined } from "@ant-design/icons";
+import { PlusOutlined, UploadOutlined } from "@ant-design/icons";
 import { createAccountByManager } from "../../services/user.services";
 import { toast } from "react-toastify";
+import axios from "axios";
 
 const { Option } = Select;
 
 const CreateAccount = ({ onAccountCreated }) => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [form] = Form.useForm();
+  const [imageFiles, setImageFiles] = useState([]);
 
   const showModal = () => {
     setIsModalVisible(true);
@@ -19,7 +21,31 @@ const CreateAccount = ({ onAccountCreated }) => {
     setIsModalVisible(false);
   };
 
-  const handleCreateAccount = (values) => {
+  const uploadToCloudinary = async (file) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('upload_preset', process.env.REACT_APP_UPLOAD_PRESET);
+
+    try {
+      const response = await axios.post(
+        `https://api.cloudinary.com/v1_1/${process.env.REACT_APP_CLOUD_NAME}/image/upload`, 
+        formData
+      );
+      return response.data.secure_url;
+    } catch (error) {
+      console.error('Error uploading to Cloudinary:', error);
+      toast.error('Image upload failed');
+      return null;
+    }
+  };
+
+  const handleFileChange = (info) => {
+    const fileList = [...info.fileList];
+    setImageFiles(fileList);
+  };
+
+
+  const handleCreateAccount = async (values) => {
     Modal.confirm({
       title: "Confirm Account Creation",
       content: "Are you sure you want to create this account?",
@@ -27,8 +53,19 @@ const CreateAccount = ({ onAccountCreated }) => {
       cancelText: "No",
       onOk: async () => {
         try {
-          console.log("Account Info: ", values);
-          await createAccountByManager(values);
+          const formData = new FormData();
+
+          Object.keys(values).forEach(key => {
+            formData.append(key, values[key]);
+          });
+
+          imageFiles.forEach((file) => {
+            formData.append('images', file.originFileObj);
+          });
+
+          console.log("Account Info: ", Object.fromEntries(formData));
+          
+          await createAccountByManager(formData);
 
           toast.success("Account created successfully!");
           
@@ -38,6 +75,7 @@ const CreateAccount = ({ onAccountCreated }) => {
 
           setIsModalVisible(false);
           form.resetFields();
+          setImageFiles([]); // Reset danh sách ảnh
         } catch (error) {
           toast.error("Account creation failed! Please try again.");
           console.error("Error creating account:", error);
@@ -54,7 +92,7 @@ const CreateAccount = ({ onAccountCreated }) => {
 
       <Modal
         title="Create Account"
-        visible={isModalVisible}
+        open={isModalVisible}
         onCancel={handleCancel}
         footer={null}
       >
@@ -123,6 +161,22 @@ const CreateAccount = ({ onAccountCreated }) => {
               <Option value="Other">Other</Option>
             </Select>
           </Form.Item>
+
+          <Form.Item
+            label="Profile Images"
+            name="profileImages"
+          >
+            <Upload 
+              fileList={imageFiles}
+              onChange={handleFileChange}
+              beforeUpload={() => false} 
+              listType="picture"
+              multiple
+            >
+              <Button icon={<UploadOutlined />}>Select Images</Button>
+            </Upload>
+          </Form.Item>
+
 
           <Form.Item>
             <div className="flex justify-end">

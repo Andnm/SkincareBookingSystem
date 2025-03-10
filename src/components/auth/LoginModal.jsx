@@ -48,7 +48,8 @@ const LoginModal = ({ setIsLoginModal, triggerCancel }) => {
       const response = await dispatch(loginThunk(formData));
 
       if (loginThunk.rejected.match(response)) {
-        toast.error(response.payload.response.data.message);
+        console.log("loginThunk: ", response)
+        toast.error(response.payload.message);
       } else {
         const roleName = response?.payload?.account?.roleName;
 

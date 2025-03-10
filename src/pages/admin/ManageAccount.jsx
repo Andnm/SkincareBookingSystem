@@ -68,6 +68,7 @@ const ManageAccount = () => {
           };
 
           const responseGetAllItem = await getAllAccounts(params);
+          console.log("responseGetAllItem: ", responseGetAllItem)
           setProcessingData([...responseGetAllItem.data]);
           setTotalRows(responseGetAllItem.totalRows);
         } catch (error) {

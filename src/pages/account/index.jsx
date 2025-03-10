@@ -2,14 +2,15 @@ import React, { useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { userSelector } from "../../redux/selectors/selector";
 import AccountLayout from "../../components/layout/AccountLayout";
-import { Spin } from "antd";
-import { generateFallbackAvatar } from "../../utils/helpers";
+import { Select, Spin } from "antd";
+import { generateFallbackAvatar, handleActionNotSupport } from "../../utils/helpers";
+import { updateAccounts } from "../../services/user.services";
+import { toast } from "react-toastify";
 
 const Account = () => {
   const dispatch = useDispatch();
   const userData = useSelector(userSelector);
   const fileInputRef = useRef(null);
-  console.log("userData: ", userData);
 
   const [formData, setFormData] = useState({
     fullName: userData?.user?.fullName || "",
@@ -17,6 +18,8 @@ const Account = () => {
     phone: userData?.user?.phone || "",
     address: userData?.user?.address || "",
     avatar_url: userData?.user?.avatar_url || "",
+    age: userData?.user?.age || "",
+    gender: userData?.user?.gender || "",
   });
 
   const [isLoading, setIsLoading] = useState(false);
@@ -39,47 +42,26 @@ const Account = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // try {
-    //   setIsLoading(true);
+    try {
+      setIsLoading(true);
 
-    //   let uploadedImageUrl = formData.avatar_url;
+      const updateData = {
+        fullName: formData.fullName,
+        age: parseInt(formData.age),
+        gender: formData.gender,
+        phone: formData.phone,
+        address: formData.address
+      };
 
-    //   if (selectedImage) {
-    //     uploadedImageUrl = await handleUploadToFirebase(
-    //       selectedImage,
-    //       "avatars_FO"
-    //     );
-    //   }
+      const response = await updateAccounts(updateData);
 
-    //   const updateData = {
-    //     name: formData.fullName,
-    //     email: formData.email,
-    //     phone: formData.phone,
-    //     address: formData.address,
-    //     avatar_url: uploadedImageUrl,
-    //   };
-
-    //   const response = await user.updateUserProfile(
-    //     updateData
-    //   );
-
-    //   dispatch(
-    //     setUserProfile({
-    //       ...userData,
-    //       ...updateData,
-    //     })
-    //   );
-
-    //   if (previewUrl) {
-    //     URL.revokeObjectURL(previewUrl);
-    //   }
-
-    //   toast.success("Profile updated successfully!");
-    // } catch (error) {
-    //   toastError(error);
-    // } finally {
-    //   setIsLoading(false);
-    // }
+      toast.success("Profile updated successfully!");
+    } catch (error) {
+      toast.error("Failed to update profile");
+      console.error(error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -145,6 +127,46 @@ const Account = () => {
                 </div>
               </div>
 
+              <div className="grid grid-cols-3 items-center mb-4">
+                <label className="text-gray-600">Age</label>
+                <div className="col-span-2 flex items-center">
+                  <input
+                    type="number"
+                    value={formData.age}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        age: e.target.value,
+                      })
+                    }
+                    className="p-2 border rounded w-full"
+                    min="0"
+                    max="120"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-3 items-center mb-4">
+                <label className="text-gray-600">Gender</label>
+                <div className="col-span-2 flex items-center">
+                  <Select
+                    style={{ width: '100%', height: "43px" }}
+                    placeholder="Select gender"
+                    value={formData.gender}
+                    onChange={(value) =>
+                      setFormData({
+                        ...formData,
+                        gender: value,
+                      })
+                    }
+                  >
+                    <Select.Option value="MALE">Male</Select.Option>
+                    <Select.Option value="FEMALE">Female</Select.Option>
+                    <Select.Option value="OTHER">Other</Select.Option>
+                  </Select>
+                </div>
+              </div>
+
               <div className="grid grid-cols-3 items-center">
                 <label className="text-gray-600">Address</label>
                 <div className="col-span-2 flex items-center">
@@ -182,7 +204,7 @@ const Account = () => {
             <div className="text-center">
               <div
                 className="w-24 h-24 mx-auto mb-4 cursor-pointer"
-                onClick={handleImageClick}
+                onClick={handleActionNotSupport}
               >
                 <img
                   src={
@@ -197,13 +219,13 @@ const Account = () => {
               <input
                 type="file"
                 ref={fileInputRef}
-                onChange={handleImageSelect}
+                onChange={handleActionNotSupport}
                 accept="image/jpeg,image/png"
                 className="hidden"
               />
               <button
                 type="button"
-                onClick={handleImageClick}
+                onClick={handleActionNotSupport}
                 className="border border-gray-300 px-4 py-2 rounded hover:bg-gray-50"
               >
                 Upload photo
