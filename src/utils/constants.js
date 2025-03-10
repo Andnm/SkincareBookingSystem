@@ -399,3 +399,5 @@ export const recommendationLogic = (answers) => {
 
   return recommendations;
 };
+
+export const SLOT_COLORS = ['purple', 'magenta', 'orange', 'cyan', 'red', 'gold', 'blue', 'green',];

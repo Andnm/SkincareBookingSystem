@@ -10,10 +10,9 @@ import {
   declineWorkingSchedule
 } from '../../services/workingSchedule.services';
 import { toast } from 'react-toastify';
+import { SLOT_COLORS } from '../../utils/constants';
 
 dayjs.locale('vi');
-
-const SLOT_COLORS = ['purple', 'magenta', 'orange', 'cyan', 'red', 'gold', 'blue', 'green',];
 
 const ManageWorkingSchedule = () => {
   const [currentDate, setCurrentDate] = useState(dayjs());
