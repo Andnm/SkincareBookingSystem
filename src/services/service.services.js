@@ -26,3 +26,31 @@ export const getAllServiceType = async () => {
     throw error;
   }
 };
+
+
+export const getAllServices = async () => {
+  try {
+    const response = await axiosInstance.get(`/api/v1/services`);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const getServiceDetailById = async (serviceId) => {
+  try {
+    const response = await axiosInstance.get(`/api/v1/services/${serviceId}`);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const createNewService = async (data) => {
+  try {
+    const response = await axiosInstance.post(`/api/v1/services/create`, data);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};

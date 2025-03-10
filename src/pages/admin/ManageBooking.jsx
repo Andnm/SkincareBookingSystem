@@ -61,7 +61,6 @@ const ManageBooking = () => {
           };
 
           const responseGetAllBookings = await getAllBookings(params);
-          console.log("responseGetAllBookings: ", responseGetAllBookings)
           setBookingData([...responseGetAllBookings.data]);
           setTotalRows(responseGetAllBookings.totalRows);
         } catch (error) {
@@ -274,11 +273,12 @@ const ManageBooking = () => {
         />
       </Spin>
 
-      <BookingDetailModal
+      {isDetailModalVisible && <BookingDetailModal
         bookingId={selectedBookingId}
         visible={isDetailModalVisible}
         onClose={handleCloseDetailModal}
-      />
+      />}
+
     </div>
   );
 };
