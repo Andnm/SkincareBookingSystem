@@ -37,6 +37,7 @@ const ServiceDetailModal = ({ serviceId, visible, onClose }) => {
                 setIsLoading(true);
                 try {
                     const response = await getServiceDetailById(serviceId);
+                    console.log("response: ", response)
                     setServiceDetails(response);
                 } catch (error) {
                     toast.error("Failed to load service details!");

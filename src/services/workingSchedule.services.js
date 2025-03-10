@@ -61,9 +61,27 @@ export const getAllSlots = async () => {
   }
 };
 
-export const createSlot = async () => {
+export const createSlot = async (data) => {
   try {
-    const response = await axiosInstance.post(`/api/v1/slots`);
+    const response = await axiosInstance.post(`/api/v1/slots`, data);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const updateSlot = async (slotId, data) => {
+  try {
+    const response = await axiosInstance.put(`/api/v1/slots/${slotId}`, data);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const deleteSlot = async (slotId) => {
+  try {
+    const response = await axiosInstance.delete(`/api/v1/slots/${slotId}`);
     return response.data;
   } catch (error) {
     throw error;

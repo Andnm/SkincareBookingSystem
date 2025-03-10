@@ -1,32 +1,32 @@
 import React, { useState } from 'react';
-import { 
-  Button, 
-  Card, 
-  List, 
-  Modal, 
-  Form, 
-  Input, 
-  Select, 
-  Tag, 
-  Empty 
+import {
+    Button,
+    Card,
+    List,
+    Modal,
+    Form,
+    Input,
+    Select,
+    Tag,
+    Empty
 } from 'antd';
-import { 
-  EditOutlined, 
-  DeleteOutlined, 
-  ClockCircleOutlined, 
-  CheckCircleOutlined, 
-  PlusOutlined 
+import {
+    EditOutlined,
+    DeleteOutlined,
+    ClockCircleOutlined,
+    CheckCircleOutlined,
+    PlusOutlined
 } from '@ant-design/icons';
-import { 
+import {
     createServiceType,
-  createSkinIssue,
-  createSkinType,
-  getAllServiceType, 
-  getAllSkinIssue, 
-  getAllSkinType, 
+    createSkinIssue,
+    createSkinType,
+    getAllServiceType,
+    getAllSkinIssue,
+    getAllSkinType,
 } from '../../services/service.services';
 import { toast } from 'react-toastify';
-import { getAllSlots, createSlot } from '../../services/workingSchedule.services';
+import { getAllSlots, createSlot, updateSlot, deleteSlot } from '../../services/workingSchedule.services';
 import { handleActionNotSupport } from '../../utils/helpers';
 
 const { Option } = Select;
@@ -37,6 +37,10 @@ const Setting = () => {
     const [loading, setLoading] = useState(false);
     const [isAddModalVisible, setIsAddModalVisible] = useState(false);
     const [addForm] = Form.useForm();
+
+    const [isEditModalVisible, setIsEditModalVisible] = useState(false);
+    const [editForm] = Form.useForm();
+    const [currentEditItem, setCurrentEditItem] = useState(null);
 
     const fetchData = async (apiCall, buttonType) => {
         try {
@@ -64,7 +68,7 @@ const Setting = () => {
         try {
             await addForm.validateFields();
             const formValues = addForm.getFieldsValue();
-            
+
             let createApiCall;
             switch (activeButton) {
                 case 'Skin Issues':
@@ -84,12 +88,12 @@ const Setting = () => {
             }
 
             const response = await createApiCall(formValues);
-            
+
             await fetchData(
                 activeButton === 'Skin Issues' ? getAllSkinIssue :
-                activeButton === 'Skin Type' ? getAllSkinType :
-                activeButton === 'Service Type' ? getAllServiceType :
-                activeButton === 'Slots' ? getAllSlots : null,
+                    activeButton === 'Skin Type' ? getAllSkinType :
+                        activeButton === 'Service Type' ? getAllServiceType :
+                            activeButton === 'Slots' ? getAllSlots : null,
                 activeButton
             );
 
@@ -103,28 +107,114 @@ const Setting = () => {
     };
 
     const handleEdit = (item) => {
-        Modal.confirm({
-            title: 'Edit Item',
-            content: `Are you sure you want to edit ${item.name}?`,
-            onOk() {
-                console.log('Edit', item);
-                toast.info(`Editing ${item.name}`);
-            },
-        });
+        if (activeButton === 'Slots') {
+            setCurrentEditItem(item);
+            editForm.setFieldsValue({
+                slotNumber: item.slotNumber,
+                startTime: item.startTime,
+                endTime: item.endTime,
+            });
+            setIsEditModalVisible(true);
+        } else {
+            Modal.confirm({
+                title: 'Edit Item',
+                content: `Are you sure you want to edit ${item.name}?`,
+                onOk() {
+                    console.log('Edit', item);
+                    toast.info(`Editing ${item.name}`);
+                },
+            });
+        }
+    };
+
+    const handleUpdateSlot = async () => {
+        try {
+            await editForm.validateFields();
+            const formValues = editForm.getFieldsValue();
+
+            setLoading(true);
+            await updateSlot(currentEditItem.id, formValues);
+
+            await fetchData(getAllSlots, 'Slots');
+
+            toast.success('Slot updated successfully');
+            setIsEditModalVisible(false);
+        } catch (error) {
+            toast.error('Failed to update slot');
+            console.error(error);
+        } finally {
+            setLoading(false);
+        }
     };
 
     const handleDelete = (item) => {
         Modal.confirm({
             title: 'Delete Item',
-            content: `Are you sure you want to delete ${item.name}?`,
+            content: `Are you sure you want to delete ${activeButton === 'Slots' ? `Slot ${item.slotNumber}` : item.name}?`,
             okText: 'Yes',
             okType: 'danger',
             cancelText: 'No',
-            onOk() {
-                console.log('Delete', item);
-                toast.warning(`Deleted ${item.name}`);
+            onOk: async () => {
+                try {
+                    setLoading(true);
+
+                    if (activeButton === 'Slots') {
+                        await deleteSlot(item.id);
+                        await fetchData(getAllSlots, 'Slots');
+                        toast.success(`Deleted Slot ${item.slotNumber}`);
+                    } else {
+                        console.log('Delete', item);
+                        toast.warning(`Deleted ${item.name}`);
+                    }
+                } catch (error) {
+                    toast.error(`Failed to delete ${activeButton === 'Slots' ? 'slot' : item.name}`);
+                    console.error(error);
+                } finally {
+                    setLoading(false);
+                }
             },
         });
+    };
+
+    const renderEditModal = () => {
+        if (!currentEditItem) return null;
+
+        return (
+            <Modal
+                title={`Edit Slot ${currentEditItem.slotNumber}`}
+                open={isEditModalVisible}
+                onOk={handleUpdateSlot}
+                onCancel={() => {
+                    setIsEditModalVisible(false);
+                    setCurrentEditItem(null);
+                }}
+                confirmLoading={loading}
+            >
+                <Form form={editForm} layout="vertical">
+                    <Form.Item
+                        name="slotNumber"
+                        label="Slot Number"
+                        rules={[{ required: true, message: 'Please input slot number!' }]}
+                    >
+                        <Input type="number" />
+                    </Form.Item>
+                    <Form.Item
+                        name="startTime"
+                        label="Start Time"
+                        rules={[{ required: true, message: 'Please input start time!' }]}
+                    >
+                        <Input placeholder="HH:MM" />
+                    </Form.Item>
+                    <Form.Item
+                        name="endTime"
+                        label="End Time"
+                        rules={[{ required: true, message: 'Please input end time!' }]}
+                    >
+                        <Input placeholder="HH:MM" />
+                    </Form.Item>
+                </Form>
+            </Modal>
+        );
     };
 
     const handleSkinIssueClick = () => fetchData(getAllSkinIssue, 'Skin Issues');
@@ -136,7 +226,7 @@ const Setting = () => {
         if (!activeButton) return null;
 
         const modalTitle = `Add New ${activeButton}`;
-        
+
         const renderFormFields = () => {
             switch (activeButton) {
                 case 'Slots':
@@ -350,9 +440,9 @@ const Setting = () => {
                     <div className="flex justify-between items-center">
                         <span>{activeButton ? `${activeButton} List` : 'Select a Category'}</span>
                         {activeButton && (
-                            <Button 
-                                type="primary" 
-                                icon={<PlusOutlined />} 
+                            <Button
+                                type="primary"
+                                icon={<PlusOutlined />}
                                 onClick={() => setIsAddModalVisible(true)}
                             >
                                 Add {activeButton}
@@ -367,6 +457,7 @@ const Setting = () => {
             </Card>
 
             {renderAddModal()}
+            {renderEditModal()}
         </div>
     );
 };

@@ -38,7 +38,7 @@ const ManageTransaction = () => {
   const [toCreatedDate, setToCreatedDate] = useState(null);
 
   const [orderBy, setOrderBy] = useState("");
-  const [isAscending, setIsAscending] = useState(true);
+  const [isAscending, setIsAscending] = useState(false);
   const [pageIndex, setPageIndex] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [totalRows, setTotalRows] = useState(0);
@@ -61,6 +61,7 @@ const ManageTransaction = () => {
           };
 
           const responseGetAllTransactions = await getAllTransactions(params);
+          console.log("responseGetAllTransactions: ", responseGetAllTransactions)
           setProcessingData([...responseGetAllTransactions.data]);
           setTotalRows(responseGetAllTransactions.totalRows);
         } catch (error) {
@@ -126,9 +127,9 @@ const ManageTransaction = () => {
         `${amount.toLocaleString()} ${record.moneyUnit}`,
     },
     {
-      title: "Payment Method",
-      dataIndex: "paymentMethod",
-      key: "paymentMethod",
+      title: "Created At",
+      dataIndex: "createdAt",
+      key: "createdAt",
     },
     {
       title: "Actions",
@@ -240,11 +241,12 @@ const ManageTransaction = () => {
         />
       </Spin>
 
-      <TransactionDetailModal
+      {isDetailModalVisible && <TransactionDetailModal
         transactionId={selectedTransactionId}
         visible={isDetailModalVisible}
         onClose={handleCloseDetailModal}
-      />
+      />}
+
     </div>
   );
 };

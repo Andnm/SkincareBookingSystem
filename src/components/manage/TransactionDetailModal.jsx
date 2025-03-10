@@ -64,8 +64,8 @@ const TransactionDetailModal = ({ transactionId, visible, onClose }) => {
                     <Descriptions.Item label="Total Amount">
                         {transactionDetail.totalAmount.toLocaleString()} {transactionDetail.moneyUnit}
                     </Descriptions.Item>
-                    <Descriptions.Item label="Payment Method">
-                        {transactionDetail.paymentMethod}
+                    <Descriptions.Item label="Created At">
+                        {transactionDetail.createdAt}
                     </Descriptions.Item>
                     <Descriptions.Item label="VNPay TMN Code">
                         {transactionDetail.vnPayTmnCode}

@@ -54,27 +54,27 @@ export const createNewService = async (data) => {
   }
 };
 
-export const createSkinIssue = async () => {
+export const createSkinIssue = async (data) => {
   try {
-    const response = await axiosInstance.post(`/api/v1/skin-issues`);
+    const response = await axiosInstance.post(`/api/v1/skin-issues`, data);
     return response.data;
   } catch (error) {
     throw error;
   }
 };
 
-export const createSkinType = async () => {
+export const createSkinType = async (data) => {
   try {
-    const response = await axiosInstance.post(`/api/v1/skin-types`);
+    const response = await axiosInstance.post(`/api/v1/skin-types`, data);
     return response.data;
   } catch (error) {
     throw error;
   }
 };
 
-export const createServiceType = async () => {
+export const createServiceType = async (data) => {
   try {
-    const response = await axiosInstance.post(`/api/v1/types`);
+    const response = await axiosInstance.post(`/api/v1/types`, data);
     return response.data;
   } catch (error) {
     throw error;
