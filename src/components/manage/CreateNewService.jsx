@@ -11,7 +11,7 @@ const CreateNewService = ({ onServiceCreated }) => {
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [form] = Form.useForm();
     const [loading, setLoading] = useState(false);
-    const [uploadedImages, setUploadedImages] = useState([]);
+    const [fileList, setFileList] = useState([]);
     const [skinIssues, setSkinIssues] = useState([]);
     const [skinTypes, setSkinTypes] = useState([]);
     const [serviceTypes, setServiceTypes] = useState([]);
@@ -48,41 +48,12 @@ const CreateNewService = ({ onServiceCreated }) => {
 
     const handleCancel = () => {
         form.resetFields();
-        setUploadedImages([]);
+        setFileList([]);
         setIsModalVisible(false);
     };
 
-    const customUploadRequest = async ({ file, onSuccess, onError }) => {
-        const cloud_name = process.env.REACT_APP_CLOUD_NAME;
-        const uploadPreset = process.env.REACT_APP_UPLOAD_PRESET;
-
-        if (!cloud_name || !uploadPreset) {
-            onError(new Error("Cloudinary configuration is missing"));
-            return;
-        }
-
-        const formData = new FormData();
-        formData.append("file", file);
-        formData.append("upload_preset", uploadPreset);
-
-        try {
-            const response = await fetch(`https://api.cloudinary.com/v1_1/${cloud_name}/image/upload`, {
-                method: "POST",
-                body: formData
-            });
-
-            if (!response.ok) {
-                throw new Error("Upload failed");
-            }
-
-            const data = await response.json();
-            onSuccess(data, file);
-
-            setUploadedImages(prev => [...prev, data.secure_url]);
-        } catch (error) {
-            onError(error);
-            toast.error("Image upload failed");
-        }
+    const handleFileChange = ({ fileList }) => {
+        setFileList(fileList);
     };
 
     const handleCreateService = (values) => {
@@ -95,17 +66,39 @@ const CreateNewService = ({ onServiceCreated }) => {
                 try {
                     setLoading(true);
 
-                    // Prepare the data for API
-                    const serviceData = {
-                        ...values,
-                        Images: uploadedImages,
-                        ServiceSkinIssues: values.ServiceSkinIssues?.map(id => ({ id })),
-                        ServiceSkinTypes: values.ServiceSkinTypes?.map(id => ({ id })),
-                        ServiceTypes: values.ServiceTypes?.map(id => ({ id }))
-                    };
+                    const formData = new FormData();
 
-                    console.log("Service Data:", serviceData);
-                    await createNewService(serviceData);
+                    formData.append("Name", values.Name);
+                    formData.append("Description", values.Description);
+                    formData.append("Duration", values.Duration);
+                    formData.append("DurationUnit", values.DurationUnit);
+                    formData.append("Price", values.Price);
+                    formData.append("MoneyUnit", values.MoneyUnit);
+
+                    fileList.forEach((file, index) => {
+                        formData.append("Images", file.originFileObj);
+                    });
+
+                    // Thêm từng ID vào FormData với cùng tên key
+                    if (values.ServiceSkinIssues && values.ServiceSkinIssues.length > 0) {
+                        values.ServiceSkinIssues.forEach(id => {
+                            formData.append("ServiceSkinIssues", id);
+                        });
+                    }
+
+                    if (values.ServiceSkinTypes && values.ServiceSkinTypes.length > 0) {
+                        values.ServiceSkinTypes.forEach(id => {
+                            formData.append("ServiceSkinTypes", id);
+                        });
+                    }
+
+                    if (values.ServiceTypes && values.ServiceTypes.length > 0) {
+                        values.ServiceTypes.forEach(id => {
+                            formData.append("ServiceTypes", id);
+                        });
+                    }
+
+                    await createNewService(formData);
 
                     toast.success("Service created successfully!");
 
@@ -171,56 +164,58 @@ const CreateNewService = ({ onServiceCreated }) => {
                             <TextArea rows={4} placeholder="Enter description" />
                         </Form.Item>
 
-                        <div className="flex gap-4">
-                            <Form.Item
-                                label="Duration"
-                                name="Duration"
-                                className="w-1/2"
-                                rules={[{ required: true, message: "Please input duration!" }]}
-                            >
-                                <InputNumber min={1} placeholder="Duration" className="w-full" />
-                            </Form.Item>
+                        <div className="flex gap-30">
+                            <div className="flex w-1/2">
+                                <Form.Item
+                                    label="Duration"
+                                    name="Duration"
+                                    className="w-1/2"
+                                    rules={[{ required: true, message: "Please input duration!" }]}
+                                >
+                                    <InputNumber min={1} placeholder="Duration" className="w-full" />
+                                </Form.Item>
 
-                            <Form.Item
-                                label="Duration Unit"
-                                name="DurationUnit"
-                                className="w-1/2"
-                                rules={[{ required: true, message: "Please select duration unit!" }]}
-                            >
-                                <Select placeholder="Select duration unit">
-                                    <Option value="Minutes">Minutes</Option>
-                                    <Option value="Hours">Hours</Option>
-                                </Select>
-                            </Form.Item>
-                        </div>
+                                <Form.Item
+                                    label="Duration Unit"
+                                    name="DurationUnit"
+                                    className="w-1/2"
+                                    rules={[{ required: true, message: "Please select duration unit!" }]}
+                                >
+                                    <Select placeholder="Select duration unit">
+                                        <Option value="Minutes">Minutes</Option>
+                                        <Option value="Hours">Hours</Option>
+                                    </Select>
+                                </Form.Item>
+                            </div>
 
-                        <div className="flex gap-4">
-                            <Form.Item
-                                label="Price"
-                                name="Price"
-                                className="w-1/2"
-                                rules={[{ required: true, message: "Please input price!" }]}
-                            >
-                                <InputNumber
-                                    min={0}
-                                    placeholder="Enter price"
-                                    className="w-full"
-                                    formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-                                    parser={(value) => value.replace(/\$\s?|(,*)/g, '')}
-                                />
-                            </Form.Item>
+                            <div className="flex w-1/2">
+                                <Form.Item
+                                    label="Price"
+                                    name="Price"
+                                    className="w-1/2"
+                                    rules={[{ required: true, message: "Please input price!" }]}
+                                >
+                                    <InputNumber
+                                        min={0}
+                                        placeholder="Enter price"
+                                        className="w-full"
+                                        formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                                        parser={(value) => value.replace(/\$\s?|(,*)/g, '')}
+                                    />
+                                </Form.Item>
 
-                            <Form.Item
-                                label="Currency"
-                                name="MoneyUnit"
-                                className="w-1/2"
-                                rules={[{ required: true, message: "Please select currency!" }]}
-                            >
-                                <Select placeholder="Select currency">
-                                    <Option value="VND">VND</Option>
-                                    <Option value="USD">USD</Option>
-                                </Select>
-                            </Form.Item>
+                                <Form.Item
+                                    label="Currency"
+                                    name="MoneyUnit"
+                                    className="w-1/2"
+                                    rules={[{ required: true, message: "Please select currency!" }]}
+                                >
+                                    <Select placeholder="Select currency">
+                                        <Option value="VND">VND</Option>
+                                        <Option value="USD">USD</Option>
+                                    </Select>
+                                </Form.Item>
+                            </div>
                         </div>
 
                         <Form.Item
@@ -232,8 +227,9 @@ const CreateNewService = ({ onServiceCreated }) => {
                         >
                             <Upload
                                 listType="picture-card"
-                                customRequest={customUploadRequest}
-                                onChange={({ fileList }) => console.log("fileList changed", fileList)}
+                                fileList={fileList}
+                                onChange={handleFileChange}
+                                beforeUpload={() => false}
                                 multiple={true}
                             >
                                 <div>

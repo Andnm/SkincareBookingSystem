@@ -263,7 +263,6 @@ const ManageService = () => {
         <Table
           columns={columns}
           dataSource={serviceData}
-          rowKey={(record) => record.id}
           pagination={{
             current: pageIndex,
             pageSize: pageSize,

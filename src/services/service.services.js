@@ -27,9 +27,11 @@ export const getAllServiceType = async () => {
   }
 };
 
-export const getAllServices = async () => {
+export const getAllServices = async (params) => {
   try {
-    const response = await axiosInstance.get(`/api/v1/services`);
+    const response = await axiosInstance.get(`/api/v1/services`, {
+      params: params,
+    });
     return response.data;
   } catch (error) {
     throw error;
@@ -45,9 +47,17 @@ export const getServiceDetailById = async (serviceId) => {
   }
 };
 
-export const createNewService = async (data) => {
+export const createNewService = async (formData) => {
   try {
-    const response = await axiosInstance.post(`/api/v1/services/create`, data);
+    const response = await axiosInstance.post(
+      `/api/v1/services/create`,
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
     return response.data;
   } catch (error) {
     throw error;
