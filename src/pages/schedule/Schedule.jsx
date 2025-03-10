@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Form, Select, DatePicker, Radio, Input, Button, Typography, Space, Checkbox, Row, Col, Card } from 'antd';
 import { useLocation } from 'react-router-dom';
-import { list_services_data_sample, therapistData } from '../../utils/constants';
+import { therapistData } from '../../utils/constants';
 import { useScrollToTop } from '../../utils/helpers';
 import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
+import { getAllSlots } from '../../services/workingSchedule.services';
+import { toast } from 'react-toastify';
+import { getAllServices } from '../../services/service.services';
 
 dayjs.extend(customParseFormat);
 
@@ -17,41 +20,19 @@ const Schedule = () => {
   useScrollToTop();
   const [form] = Form.useForm();
   const [selectedDate, setSelectedDate] = useState(null);
+  const [timeSlots, setTimeSlots] = useState([]);
+  const [services, setServices] = useState([]);
+  const [loading, setLoading] = useState({
+    slots: false,
+    services: false
+  });
   const location = useLocation();
   const selectedTherapist = location.state?.therapist;
 
-  const timeSlots = [
-    {
-      value: "slot1",
-      label: "8:00 - 10:00",
-      startTime: "08:00",
-      endTime: "10:00"
-    },
-    {
-      value: "slot2",
-      label: "10:30 - 12:30",
-      startTime: "10:30",
-      endTime: "12:30"
-    },
-    {
-      value: "slot3",
-      label: "13:00 - 15:00",
-      startTime: "13:00",
-      endTime: "15:00"
-    },
-    {
-      value: "slot4",
-      label: "15:30 - 17:30",
-      startTime: "15:30",
-      endTime: "17:30"
-    },
-    {
-      value: "slot5",
-      label: "18:00 - 20:00",
-      startTime: "18:00",
-      endTime: "20:00"
-    }
-  ];
+  useEffect(() => {
+    fetchTimeSlots();
+    fetchServices();
+  }, []);
 
   useEffect(() => {
     if (selectedTherapist) {
@@ -60,6 +41,32 @@ const Schedule = () => {
       });
     }
   }, [selectedTherapist, form]);
+
+  const fetchTimeSlots = async () => {
+    try {
+      setLoading(prev => ({ ...prev, slots: true }));
+      const response = await getAllSlots();
+      setTimeSlots(response.data || []);
+    } catch (error) {
+      toast.error('Failed to fetch time slots');
+      console.error(error);
+    } finally {
+      setLoading(prev => ({ ...prev, slots: false }));
+    }
+  };
+
+  const fetchServices = async () => {
+    try {
+      setLoading(prev => ({ ...prev, services: true }));
+      const response = await getAllServices();
+      setServices(response.data || []);
+    } catch (error) {
+      toast.error('Failed to fetch services');
+      console.error(error);
+    } finally {
+      setLoading(prev => ({ ...prev, services: false }));
+    }
+  };
 
   const disabledDate = (current) => {
     return current && current < dayjs().startOf('day');
@@ -160,8 +167,11 @@ const Schedule = () => {
                   name="services"
                   rules={[{ required: true, message: 'Please select a service' }]}
                 >
-                  <Select>
-                    {list_services_data_sample.map((service, index) => (
+                  <Select
+                    loading={loading.services}
+                    placeholder="Select a service"
+                  >
+                    {services.map((service, index) => (
                       <Option key={index} value={service.id}>
                         {service.name}
                       </Option>
@@ -188,17 +198,18 @@ const Schedule = () => {
                   name="timeSlot"
                   rules={[{ required: true, message: 'Please select a time slot' }]}
                 >
-                  <Radio.Group className="w-full">
+                  <Radio.Group className="w-full"
+                    loading={loading.slots ? 'true' : 'false'}>
                     <Card className="w-full" size="small">
                       <Space wrap>
                         {timeSlots.map((slot) => (
                           <Radio.Button
-                            key={slot.value}
-                            value={slot.value}
+                            key={slot.id}
+                            value={slot.slotNumber}
                             className="mb-2"
                             disabled={isSlotDisabled(slot)}
                           >
-                            {slot.label}
+                            {`Slot ${slot.slotNumber} (${slot.startTime} - ${slot.endTime})`}
                           </Radio.Button>
                         ))}
                       </Space>

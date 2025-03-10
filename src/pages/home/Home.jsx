@@ -18,10 +18,37 @@ import {
 import { getRandomRating } from "../../utils/common";
 import { useNavigate } from "react-router-dom";
 import ServiceCard from "../../components/services/ServiceCard";
+import { getAllServices } from "../../services/service.services";
 
 const Home = () => {
   const navigate = useNavigate();
-  const displayedRooms = list_services_data_sample.slice(0, 8);
+
+  const [services, setServices] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  const fetchServices = async (name = "") => {
+    try {
+      setLoading(true);
+      setError(null);
+      const params = name ? { Name: name } : {};
+
+      const response = await getAllServices(params);
+      console.log("response: ", response.data)
+      setServices(response.data || []);
+    } catch (err) {
+      setError("Failed to fetch services");
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchServices();
+  }, []);
+
+  const displayedRooms = services.slice(0, 8);
 
   return (
     <div className="home-page light-gray-background relative">
@@ -41,7 +68,7 @@ const Home = () => {
           <h2 className="text-2xl font-bold text-blue-800 mb-6 uppercase">
             Hot services
           </h2>
-          {list_services_data_sample.length === 0 ? (
+          {services.length === 0 ? (
             <p className="text-center text-gray-500 text-lg font-semibold">
               No services available
             </p>
@@ -51,7 +78,7 @@ const Home = () => {
                 <ServiceCard key={index} service={service} />
               ))}
 
-              {list_services_data_sample.length > 8 && (
+              {services.length > 8 && (
                 <button
                   className="cursor-pointer mt-4 w-fit px-6 py-3 border-2 border-blue-800 text-blue-800 font-bold rounded-md hover:bg-blue-100 flex items-center"
                   onClick={() => {
@@ -165,7 +192,7 @@ const Home = () => {
         <div className="flex justify-center">
           <button
             className="cursor-pointer mt-4 px-6 py-3 bg-white text-blue-800 font-bold rounded-md flex items-center transition duration-300 hover:bg-blue-400 hover:text-white hover:shadow-md"
-            onClick={() => {}}
+            onClick={() => { }}
           >
             View more
           </button>
