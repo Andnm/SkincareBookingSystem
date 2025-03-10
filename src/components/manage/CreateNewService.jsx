@@ -28,12 +28,12 @@ const CreateNewService = ({ onServiceCreated }) => {
             const [skinIssuesRes, skinTypesRes, serviceTypesRes] = await Promise.all([
                 getAllSkinIssue(),
                 getAllSkinType(),
-                // getAllServiceType()
+                getAllServiceType()
             ]);
 
             setSkinIssues(skinIssuesRes.data || []);
             setSkinTypes(skinTypesRes.data || []);
-            // setServiceTypes(serviceTypesRes.data || []);
+            setServiceTypes(serviceTypesRes.data || []);
         } catch (error) {
             toast.error("Failed to load form options!");
             console.error("Error loading options:", error);

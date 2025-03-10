@@ -36,7 +36,7 @@ const HeaderManagePage = () => {
     const handleRelogin = async () => {
       const refreshToken = await localStorage.getItem("refreshtoken");
       if (refreshToken !== "undefined") {
-        const getCurrentUserAction = await dispatch(getCurrentUserThunk(refreshToken));
+        const getCurrentUserAction = await dispatch(getCurrentUserThunk());
         if (getCurrentUserThunk.rejected.match(getCurrentUserAction)) {
           console.log(
             getCurrentUserAction.payload || getCurrentUserAction.error.message

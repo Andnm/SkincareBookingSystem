@@ -18,6 +18,9 @@ import {
   PlusOutlined 
 } from '@ant-design/icons';
 import { 
+    createServiceType,
+  createSkinIssue,
+  createSkinType,
   getAllServiceType, 
   getAllSkinIssue, 
   getAllSkinType, 
@@ -64,15 +67,15 @@ const Setting = () => {
             
             let createApiCall;
             switch (activeButton) {
-                // case 'Skin Issues':
-                //     createApiCall = createSkinIssue;
-                //     break;
-                // case 'Skin Type':
-                //     createApiCall = createSkinType;
-                //     break;
-                // case 'Service Type':
-                //     createApiCall = createServiceType;
-                //     break;
+                case 'Skin Issues':
+                    createApiCall = createSkinIssue;
+                    break;
+                case 'Skin Type':
+                    createApiCall = createSkinType;
+                    break;
+                case 'Service Type':
+                    createApiCall = createServiceType;
+                    break;
                 case 'Slots':
                     createApiCall = createSlot;
                     break;

@@ -23,9 +23,15 @@ const AccountSidebar = () => {
 
   useEffect(() => {
     const fetchCurrentUser = async () => {
-      await dispatch(getCurrentUserThunk());
+      const refreshToken = await localStorage.getItem("refreshtoken");
+      if (refreshToken !== "undefined") {
+        await dispatch(getCurrentUserThunk());
+
+      }
+
     };
 
+    
     fetchCurrentUser();
   }, [dispatch]);
 

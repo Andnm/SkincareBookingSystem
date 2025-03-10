@@ -20,13 +20,12 @@ export const getAllSkinType = async () => {
 
 export const getAllServiceType = async () => {
   try {
-    const response = await axiosInstance.get(`/api/v1/service-type`);
+    const response = await axiosInstance.get(`/api/v1/types`);
     return response.data;
   } catch (error) {
     throw error;
   }
 };
-
 
 export const getAllServices = async () => {
   try {
@@ -49,6 +48,33 @@ export const getServiceDetailById = async (serviceId) => {
 export const createNewService = async (data) => {
   try {
     const response = await axiosInstance.post(`/api/v1/services/create`, data);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const createSkinIssue = async () => {
+  try {
+    const response = await axiosInstance.post(`/api/v1/skin-issues`);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const createSkinType = async () => {
+  try {
+    const response = await axiosInstance.post(`/api/v1/skin-types`);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const createServiceType = async () => {
+  try {
+    const response = await axiosInstance.post(`/api/v1/types`);
     return response.data;
   } catch (error) {
     throw error;

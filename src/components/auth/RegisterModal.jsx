@@ -4,7 +4,6 @@ import ThirdServicesLogin from "./ThirdServicesLogin";
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa6";
 import { toast } from "react-toastify";
 import {
-  getCurrentUserThunk,
   loginThunk,
   registerThunk,
 } from "../../redux/actions/userThunk";

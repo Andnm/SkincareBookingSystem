@@ -1,5 +1,10 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { login, loginWithGoogle, loginWithRefreshToken, register } from "../../services/auth.services";
+import {
+  login,
+  loginWithGoogle,
+  loginWithRefreshToken,
+  register,
+} from "../../services/auth.services";
 
 export const loginThunk = createAsyncThunk(
   "user/login",
@@ -8,7 +13,7 @@ export const loginThunk = createAsyncThunk(
       const response = await login(credentials);
       return response;
     } catch (error) {
-      console.log("error: ", error)
+      console.log("error: ", error);
 
       return rejectWithValue(error.response?.data || "Something went wrong");
     }
@@ -22,7 +27,7 @@ export const loginGoogleThunk = createAsyncThunk(
       const response = await loginWithGoogle(credentials);
       return response;
     } catch (error) {
-      console.log("error: ", error)
+      console.log("error: ", error);
 
       return rejectWithValue(error.response?.data || "Something went wrong");
     }
@@ -43,12 +48,16 @@ export const registerThunk = createAsyncThunk(
 
 export const getCurrentUserThunk = createAsyncThunk(
   "user/getCurrentUser",
-  async (refreshToken, { rejectWithValue }) => {
+  async (_, { rejectWithValue }) => {
     try {
-      const response = await loginWithRefreshToken(refreshToken);
+      const refreshToken = localStorage.getItem("refreshtoken");
+
+      const response = await loginWithRefreshToken({
+        refreshToken: refreshToken,
+      });
       return response;
     } catch (error) {
-      console.log("error: ", error)
+      console.log("error: ", error);
       return rejectWithValue("Something went wrong");
     }
   }

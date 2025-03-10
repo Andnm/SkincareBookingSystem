@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import "./auth.styles.scss";
 import ThirdServicesLogin from "./ThirdServicesLogin";
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa6";
-import { getCurrentUserThunk, loginThunk } from "../../redux/actions/userThunk";
+import { loginThunk } from "../../redux/actions/userThunk";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import { userSelector } from "../../redux/selectors/selector";
