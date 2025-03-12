@@ -144,7 +144,14 @@ const ServiceDetail = () => {
             size="large"
             className="w-full"
             onClick={() => {
-              navigate("/schedule")
+              navigate("/schedule", {
+                state: {
+                  service: {
+                    id: service.id,
+                    name: service.name
+                  }
+                }
+              })
             }}
           >
             Book Now

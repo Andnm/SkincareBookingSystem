@@ -21,24 +21,6 @@ const CreateAccount = ({ onAccountCreated }) => {
     setIsModalVisible(false);
   };
 
-  const uploadToCloudinary = async (file) => {
-    const formData = new FormData();
-    formData.append('file', file);
-    formData.append('upload_preset', process.env.REACT_APP_UPLOAD_PRESET);
-
-    try {
-      const response = await axios.post(
-        `https://api.cloudinary.com/v1_1/${process.env.REACT_APP_CLOUD_NAME}/image/upload`, 
-        formData
-      );
-      return response.data.secure_url;
-    } catch (error) {
-      console.error('Error uploading to Cloudinary:', error);
-      toast.error('Image upload failed');
-      return null;
-    }
-  };
-
   const handleFileChange = (info) => {
     const fileList = [...info.fileList];
     setImageFiles(fileList);
@@ -62,8 +44,6 @@ const CreateAccount = ({ onAccountCreated }) => {
           imageFiles.forEach((file) => {
             formData.append('images', file.originFileObj);
           });
-
-          console.log("Account Info: ", Object.fromEntries(formData));
           
           await createAccountByManager(formData);
 
@@ -75,7 +55,7 @@ const CreateAccount = ({ onAccountCreated }) => {
 
           setIsModalVisible(false);
           form.resetFields();
-          setImageFiles([]); // Reset danh sách ảnh
+          setImageFiles([]); 
         } catch (error) {
           toast.error("Account creation failed! Please try again.");
           console.error("Error creating account:", error);

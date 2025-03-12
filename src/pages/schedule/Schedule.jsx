@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Form, Select, DatePicker, Radio, Input, Button, Typography, Space, Checkbox, Row, Col, Card } from 'antd';
 import { useLocation } from 'react-router-dom';
 import { therapistData } from '../../utils/constants';
@@ -19,6 +19,11 @@ const { TextArea } = Input;
 const Schedule = () => {
   useScrollToTop();
   const [form] = Form.useForm();
+  const detailsSectionRef = useRef(null);
+  const location = useLocation();
+  const selectedTherapist = location.state?.therapist;
+  const selectedService = location.state?.service;
+
   const [selectedDate, setSelectedDate] = useState(null);
   const [timeSlots, setTimeSlots] = useState([]);
   const [services, setServices] = useState([]);
@@ -26,8 +31,7 @@ const Schedule = () => {
     slots: false,
     services: false
   });
-  const location = useLocation();
-  const selectedTherapist = location.state?.therapist;
+
 
   useEffect(() => {
     fetchTimeSlots();
@@ -40,7 +44,22 @@ const Schedule = () => {
         therapist: selectedTherapist.id
       });
     }
-  }, [selectedTherapist, form]);
+
+    if (selectedService) {
+      form.setFieldsValue({
+        services: selectedService.id
+      });
+    }
+
+    if (selectedService || selectedTherapist) {
+      if (detailsSectionRef.current) {
+        detailsSectionRef.current.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start'
+        });
+      }
+    }
+  }, [selectedTherapist, selectedService, services, form]);
 
   const fetchTimeSlots = async () => {
     try {
@@ -123,7 +142,9 @@ const Schedule = () => {
             'url("https://www.vinmec.com/static/uploads/cover_list_doctor_f60bffe168.jpg")',
         }}
       >
-        <div className="absolute -bottom-10 left-1/2 transform -translate-x-1/2 text-center bg-white p-6 rounded-lg shadow-lg max-w-md mx-auto">
+        <div
+          ref={detailsSectionRef}
+          className="absolute -bottom-10 left-1/2 transform -translate-x-1/2 text-center bg-white p-6 rounded-lg shadow-lg max-w-md mx-auto">
           <h2 className="text-3xl font-semibold text-blue-900">
             Appointment Booking
           </h2>

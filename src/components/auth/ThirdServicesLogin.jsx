@@ -23,9 +23,9 @@ const ThirdServicesLogin = ({ triggerCancel, isLoading, setIsLoading }) => {
     try {
       const result = await signInWithPopup(auth, googleProvider);
 
-      const token = await result.user.getIdToken();
+      const googleToken = await result.user.getIdToken();
 
-      const response = await dispatch(loginGoogleThunk({ token }));
+      const response = await dispatch(loginGoogleThunk({ googleToken: googleToken }));
       if (loginGoogleThunk.rejected.match(response)) {
         toast.error(response.payload || "Login thất bại");
       } else {
