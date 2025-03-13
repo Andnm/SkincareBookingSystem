@@ -295,7 +295,7 @@ const ManageWorkingSchedule = () => {
       title: 'Actions',
       key: 'actions',
       render: (_, record) => {
-        if (record.status === 'Booked') {
+        if (record.status === 'Pending') {
           return (
             <Space>
               <Button

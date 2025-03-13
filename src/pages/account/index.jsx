@@ -4,12 +4,14 @@ import { userSelector } from "../../redux/selectors/selector";
 import AccountLayout from "../../components/layout/AccountLayout";
 import { Select, Spin } from "antd";
 import { generateFallbackAvatar, handleActionNotSupport } from "../../utils/helpers";
-import { updateAccounts } from "../../services/user.services";
+import { provideSkinTherapistInfo, updateAccounts } from "../../services/user.services";
 import { toast } from "react-toastify";
+import { ROLE_SKINTHERAPIST } from "../../utils/constants";
 
 const Account = () => {
   const dispatch = useDispatch();
   const userData = useSelector(userSelector);
+  console.log("userData: ", userData)
   const fileInputRef = useRef(null);
 
   const [formData, setFormData] = useState({
@@ -20,6 +22,11 @@ const Account = () => {
     avatar_url: userData?.user?.avatar_url || "",
     age: userData?.user?.age || "",
     gender: userData?.user?.gender || "",
+
+    // 
+    description: userData?.user?.description || "",
+    experience: userData?.user?.experience || "",
+    specialization: userData?.user?.specialization || "",
   });
 
   const [isLoading, setIsLoading] = useState(false);
@@ -45,15 +52,29 @@ const Account = () => {
     try {
       setIsLoading(true);
 
-      const updateData = {
-        fullName: formData.fullName,
-        age: parseInt(formData.age),
-        gender: formData.gender,
-        phone: formData.phone,
-        address: formData.address
-      };
+      if (userData?.user?.roleName === ROLE_SKINTHERAPIST && (
+        formData.description !== '' ||
+        formData.experience !== '' ||
+        formData.specialization !== ''
+      )) {
+        const skinTherapistData = {
+          description: formData.description,
+          experience: formData.experience,
+          specialization: formData.specialization
+        };
 
-      const response = await updateAccounts(updateData);
+        await provideSkinTherapistInfo(skinTherapistData);
+      }
+
+      // const updateData = {
+      //   fullName: formData.fullName,
+      //   age: parseInt(formData.age),
+      //   gender: formData.gender,
+      //   phone: formData.phone,
+      //   address: formData.address
+      // };
+
+      // const response = await updateAccounts(updateData);
 
       toast.success("Profile updated successfully!");
     } catch (error) {
@@ -183,6 +204,61 @@ const Account = () => {
                   />
                 </div>
               </div>
+
+              {userData?.user?.roleName === ROLE_SKINTHERAPIST && (
+                <>
+                  <div className="grid grid-cols-3 items-center mt-6">
+                    <label className="text-gray-600">Description</label>
+                    <div className="col-span-2 flex items-center">
+                      <textarea
+                        value={formData.description}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            description: e.target.value,
+                          })
+                        }
+                        className="p-2 border rounded w-full"
+                        rows={4}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-3 items-center mt-6">
+                    <label className="text-gray-600">Experience</label>
+                    <div className="col-span-2 flex items-center">
+                      <input
+                        type="text"
+                        value={formData.experience}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            experience: e.target.value,
+                          })
+                        }
+                        className="p-2 border rounded w-full"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-3 items-center mt-6">
+                    <label className="text-gray-600">Specialization</label>
+                    <div className="col-span-2 flex items-center">
+                      <input
+                        type="text"
+                        value={formData.specialization}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            specialization: e.target.value,
+                          })
+                        }
+                        className="p-2 border rounded w-full"
+                      />
+                    </div>
+                  </div>
+                </>
+              )}
 
               <div className="grid grid-cols-3 items-center">
                 <div className="col-start-2">

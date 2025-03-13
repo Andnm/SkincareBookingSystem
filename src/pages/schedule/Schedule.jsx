@@ -169,8 +169,7 @@ const Schedule = () => {
     form.setFieldsValue({ timeSlot: undefined });
   };
 
-  const onFinish = async (values) => {
-    // Kiểm tra đăng nhập
+  const handleCreateBooking = async (values) => {
     if (!userData) {
       toast.error('Please login before booking');
       return;
@@ -179,12 +178,14 @@ const Schedule = () => {
     try {
       const bookingData = {
         serviceId: values.services,
-        patient: {
-          fullName: values.fullName,
-          gender: values.gender,
-          phone: values.phone,
-          email: values.email,
-        },
+        ...(bookForSelf ? {} : {
+          patient: {
+            fullName: values.fullName,
+            gender: values.gender,
+            phone: values.phone,
+            email: values.email,
+          }
+        }),
         bookingDate: values.date.format('YYYY-MM-DDTHH:mm:ss.SSSZ'),
         type: 'ONLINE',
         bookForCustomerAccountOwner: bookForSelf,
@@ -195,6 +196,8 @@ const Schedule = () => {
       };
 
       const response = await createBookings(bookingData);
+
+      console.log("response bookings: ", response)
 
       toast.success('Booking successful!');
       navigate('/account-history');
@@ -229,7 +232,7 @@ const Schedule = () => {
         <Form
           form={form}
           layout="vertical"
-          onFinish={onFinish}
+          onFinish={handleCreateBooking}
         >
           <Card className="mb-8">
             <Title level={4} className="mb-6" style={{
@@ -301,7 +304,7 @@ const Schedule = () => {
                         {timeSlots.map((slot) => (
                           <Radio.Button
                             key={slot.id}
-                            value={slot.slotNumber}
+                            value={slot.id}
                             className="mb-2"
                             disabled={isSlotDisabled(slot)}
                           >
@@ -331,66 +334,71 @@ const Schedule = () => {
                 onChange={handleBookForSelfChange}
               />
             </div>
+            {!bookForSelf &&
+              (
+                <>
+                  <Row gutter={24} className='mt-4'>
+                    <Col xs={24} md={12}>
+                      <Form.Item
+                        label="Full Name"
+                        name="fullName"
+                        rules={[{ required: true, message: 'Please enter your name' }]}
+                      >
+                        <Input />
+                      </Form.Item>
 
-            <Row gutter={24} className='mt-4'>
-              <Col xs={24} md={12}>
-                <Form.Item
-                  label="Full Name"
-                  name="fullName"
-                  rules={[{ required: true, message: 'Please enter your name' }]}
-                >
-                  <Input />
-                </Form.Item>
+                      <Form.Item
+                        label="Gender"
+                        name="gender"
+                        rules={[{ required: true, message: 'Please select your gender' }]}
+                      >
+                        <Radio.Group>
+                          <Radio value="male">Male</Radio>
+                          <Radio value="female">Female</Radio>
+                        </Radio.Group>
+                      </Form.Item>
+                    </Col>
 
-                <Form.Item
-                  label="Gender"
-                  name="gender"
-                  rules={[{ required: true, message: 'Please select your gender' }]}
-                >
-                  <Radio.Group>
-                    <Radio value="male">Male</Radio>
-                    <Radio value="female">Female</Radio>
-                  </Radio.Group>
-                </Form.Item>
-              </Col>
+                    <Col xs={24} md={12}>
+                      <Form.Item
+                        label="Phone Number"
+                        name="phone"
+                        rules={[{ required: true, message: 'Please enter your phone number' }]}
+                      >
+                        <Input />
+                      </Form.Item>
 
-              <Col xs={24} md={12}>
-                <Form.Item
-                  label="Phone Number"
-                  name="phone"
-                  rules={[{ required: true, message: 'Please enter your phone number' }]}
-                >
-                  <Input />
-                </Form.Item>
+                      <Form.Item
+                        label="Email"
+                        name="email"
+                      >
+                        <Input />
+                      </Form.Item>
+                    </Col>
 
-                <Form.Item
-                  label="Email"
-                  name="email"
-                >
-                  <Input />
-                </Form.Item>
-              </Col>
+                    <Col span={24}>
+                      <Form.Item
+                        label="Reason for Visit"
+                        name="reason"
+                        rules={[{ required: true, message: 'Please enter your reason for visit' }]}
+                      >
+                        <TextArea rows={4} />
+                      </Form.Item>
+                    </Col>
+                  </Row>
 
-              <Col span={24}>
-                <Form.Item
-                  label="Reason for Visit"
-                  name="reason"
-                  rules={[{ required: true, message: 'Please enter your reason for visit' }]}
-                >
-                  <TextArea rows={4} />
-                </Form.Item>
-              </Col>
-            </Row>
-
-            <Form.Item
-              name="agreement"
-              valuePropName="checked"
-              rules={[{ required: true, message: 'Please accept the terms' }]}
-            >
-              <Checkbox>
-                I have read and agree to the privacy policy
-              </Checkbox>
-            </Form.Item>
+                  <Form.Item
+                    name="agreement"
+                    valuePropName="checked"
+                    rules={[{ required: true, message: 'Please accept the terms' }]}
+                  >
+                    <Checkbox>
+                      I have read and agree to the privacy policy
+                    </Checkbox>
+                  </Form.Item>
+                </>
+              )
+            }
 
             <Form.Item className="text-center">
               <Button type="primary" htmlType="submit" size="large">

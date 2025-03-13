@@ -18,7 +18,7 @@ export const updateAccounts = async (data) => {
   } catch (error) {
     throw error;
   }
-}
+};
 
 export const getAllSkinTherapists = async (data) => {
   try {
@@ -31,12 +31,27 @@ export const getAllSkinTherapists = async (data) => {
 
 export const createAccountByManager = async (formData) => {
   try {
-    const response = await axiosInstance.post(`/api/v1/accounts/provide`,  formData,
+    const response = await axiosInstance.post(
+      `/api/v1/accounts/provide`,
+      formData,
       {
         headers: {
           "Content-Type": "multipart/form-data",
         },
-      });
+      }
+    );
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const provideSkinTherapistInfo = async (formData) => {
+  try {
+    const response = await axiosInstance.post(
+      `/api/v1/skin-therapists`,
+      formData
+    );
     return response.data;
   } catch (error) {
     throw error;

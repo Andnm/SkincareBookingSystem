@@ -96,7 +96,7 @@ const SkinTherapist = () => {
                               {therapist?.account?.fullName}
                             </Title>
                             <Space wrap>
-                              {therapist.specialization.split(',').map((spec, index) => (
+                              {therapist?.specialization.split(',').map((spec, index) => (
                                 <Tag color="blue" key={index} className="mr-2">
                                   {spec.trim()}
                                 </Tag>
@@ -106,10 +106,10 @@ const SkinTherapist = () => {
 
                           <Space direction="vertical" size={8}>
                             <Text type="secondary" className="flex items-center gap-2">
-                              <ClockCircleOutlined /> Experience: {therapist.experience}
+                              <ClockCircleOutlined /> Experience: {therapist?.experience}
                             </Text>
                             <Text type="secondary" className="flex items-center gap-2">
-                              <UserOutlined /> {therapist.account?.gender}, {therapist.account?.age} years old
+                              <UserOutlined /> {therapist?.account?.gender}, {therapist?.account?.age} years old
                             </Text>
 
                             <Text type="secondary" className="flex items-center gap-2">
@@ -119,7 +119,7 @@ const SkinTherapist = () => {
                           </Space>
 
                           <Paragraph className="text-gray-600">
-                            {therapist.description}
+                            {therapist?.description}
                           </Paragraph>
                         </Space>
                       </div>
