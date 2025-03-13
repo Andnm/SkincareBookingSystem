@@ -190,7 +190,7 @@ const Schedule = () => {
   };
 
   const handleCreateBooking = async (values) => {
-    if (!userData) {
+    if (!userData?.user) {
       toast.error('Please login before booking');
       return;
     }

@@ -34,7 +34,6 @@ const Home = () => {
       const params = name ? { Name: name } : {};
 
       const response = await getAllServices(params);
-      console.log("response: ", response.data)
       setServices(response.data || []);
     } catch (err) {
       setError("Failed to fetch services");
