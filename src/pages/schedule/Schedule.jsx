@@ -1,13 +1,16 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Form, Select, DatePicker, Radio, Input, Button, Typography, Space, Checkbox, Row, Col, Card } from 'antd';
-import { useLocation } from 'react-router-dom';
-import { therapistData } from '../../utils/constants';
+import { Form, Select, DatePicker, Radio, Input, Button, Typography, Space, Checkbox, Row, Col, Card, Switch } from 'antd';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useScrollToTop } from '../../utils/helpers';
 import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 import { getAllSlots } from '../../services/workingSchedule.services';
 import { toast } from 'react-toastify';
 import { getAllServices } from '../../services/service.services';
+import { getAllSkinTherapists } from '../../services/user.services';
+import { useSelector } from 'react-redux';
+import { userSelector } from '../../redux/selectors/selector';
+import { createBookings } from '../../services/booking.services';
 
 dayjs.extend(customParseFormat);
 
@@ -21,33 +24,46 @@ const Schedule = () => {
   const [form] = Form.useForm();
   const detailsSectionRef = useRef(null);
   const location = useLocation();
+  const navigate = useNavigate();
   const selectedTherapist = location.state?.therapist;
   const selectedService = location.state?.service;
+  const userData = useSelector(userSelector);
 
   const [selectedDate, setSelectedDate] = useState(null);
+  const [bookForSelf, setBookForSelf] = useState(true);
+  const [therapists, setTherapists] = useState([]);
   const [timeSlots, setTimeSlots] = useState([]);
   const [services, setServices] = useState([]);
   const [loading, setLoading] = useState({
     slots: false,
-    services: false
+    services: false,
+    therapists: false
   });
 
 
   useEffect(() => {
     fetchTimeSlots();
     fetchServices();
+    fetchTherapists();
   }, []);
 
   useEffect(() => {
     if (selectedTherapist) {
       form.setFieldsValue({
-        therapist: selectedTherapist.id
+        therapist: selectedTherapist.account.id
       });
     }
 
     if (selectedService) {
       form.setFieldsValue({
         services: selectedService.id
+      });
+    }
+
+    if (userData && bookForSelf) {
+      form.setFieldsValue({
+        fullName: userData?.user?.fullName,
+        email: userData?.user?.email,
       });
     }
 
@@ -59,7 +75,23 @@ const Schedule = () => {
         });
       }
     }
-  }, [selectedTherapist, selectedService, services, form]);
+  }, [selectedTherapist, selectedService, services, form, userData]);
+
+  const handleBookForSelfChange = (checked) => {
+    setBookForSelf(checked);
+
+    if (checked && userData) {
+      form.setFieldsValue({
+        fullName: userData?.user?.fullName,
+        email: userData?.user?.email,
+      });
+    } else {
+      form.setFieldsValue({
+        fullName: undefined,
+        email: undefined,
+      });
+    }
+  };
 
   const fetchTimeSlots = async () => {
     try {
@@ -84,6 +116,18 @@ const Schedule = () => {
       console.error(error);
     } finally {
       setLoading(prev => ({ ...prev, services: false }));
+    }
+  };
+
+  const fetchTherapists = async () => {
+    try {
+      const response = await getAllSkinTherapists();
+      setTherapists(response.data || []);
+      setLoading(prev => ({ ...prev, therapists: true }));
+    } catch (error) {
+      console.error('Failed to fetch therapists:', error);
+    } finally {
+      setLoading(prev => ({ ...prev, therapists: false }));
     }
   };
 
@@ -125,12 +169,40 @@ const Schedule = () => {
     form.setFieldsValue({ timeSlot: undefined });
   };
 
-  const onFinish = (values) => {
-    const formattedValues = {
-      ...values,
-      date: values.date?.format('YYYY-MM-DD')
-    };
-    console.log('Form values:', formattedValues);
+  const onFinish = async (values) => {
+    // Kiểm tra đăng nhập
+    if (!userData) {
+      toast.error('Please login before booking');
+      return;
+    }
+
+    try {
+      const bookingData = {
+        serviceId: values.services,
+        patient: {
+          fullName: values.fullName,
+          gender: values.gender,
+          phone: values.phone,
+          email: values.email,
+        },
+        bookingDate: values.date.format('YYYY-MM-DDTHH:mm:ss.SSSZ'),
+        type: 'ONLINE',
+        bookForCustomerAccountOwner: bookForSelf,
+        bookingSlotCreateDTO: {
+          slotId: values.timeSlot,
+          skinTherapistId: values.therapist
+        }
+      };
+
+      const response = await createBookings(bookingData);
+
+      toast.success('Booking successful!');
+      navigate('/account-history');
+
+    } catch (error) {
+      console.error('Booking error:', error);
+      toast.error(error.response?.data?.message || 'Booking failed');
+    }
   };
 
   return (
@@ -174,10 +246,13 @@ const Schedule = () => {
                   name="therapist"
                   rules={[{ required: true, message: 'Please select a therapist' }]}
                 >
-                  <Select>
-                    {therapistData.map(therapist => (
-                      <Option key={therapist.id} value={therapist.id}>
-                        {therapist.fullName} - {therapist.specialization.split(',')[0]}
+                  <Select
+                    loading={loading.therapists}
+                    placeholder="Select a skin therapist"
+                  >
+                    {therapists.map(therapist => (
+                      <Option key={therapist?.account?.id} value={therapist?.account?.id}>
+                        {therapist?.account?.fullName} - {therapist?.specialization.split(',')[0]}
                       </Option>
                     ))}
                   </Select>
@@ -248,6 +323,14 @@ const Schedule = () => {
             }}>
               Customer information
             </Title>
+
+            <div className="mb-4 mt-4 flex items-center">
+              <Text className="mr-2">Book for myself</Text>
+              <Switch
+                checked={bookForSelf}
+                onChange={handleBookForSelfChange}
+              />
+            </div>
 
             <Row gutter={24} className='mt-4'>
               <Col xs={24} md={12}>

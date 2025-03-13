@@ -22,9 +22,7 @@ export const updateAccounts = async (data) => {
 
 export const getAllSkinTherapists = async (data) => {
   try {
-    const response = await axiosInstance.get(`/api/v1/skin-therapists/get-all`, {
-      params: data,
-    });
+    const response = await axiosInstance.get(`/api/v1/skin-therapists/get-all`);
     return response.data;
   } catch (error) {
     throw error;
