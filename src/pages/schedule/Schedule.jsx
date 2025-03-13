@@ -10,7 +10,7 @@ import { getAllServices } from '../../services/service.services';
 import { getAllSkinTherapists } from '../../services/user.services';
 import { useSelector } from 'react-redux';
 import { userSelector } from '../../redux/selectors/selector';
-import { createBookings } from '../../services/booking.services';
+import { createBookings, getAllSkinTherapistByWorkingDateAndSlotId } from '../../services/booking.services';
 
 dayjs.extend(customParseFormat);
 
@@ -25,11 +25,11 @@ const Schedule = () => {
   const detailsSectionRef = useRef(null);
   const location = useLocation();
   const navigate = useNavigate();
-  const selectedTherapist = location.state?.therapist;
   const selectedService = location.state?.service;
   const userData = useSelector(userSelector);
 
   const [selectedDate, setSelectedDate] = useState(null);
+  const [selectedSlot, setSelectedSlot] = useState(null);
   const [bookForSelf, setBookForSelf] = useState(true);
   const [therapists, setTherapists] = useState([]);
   const [timeSlots, setTimeSlots] = useState([]);
@@ -44,16 +44,9 @@ const Schedule = () => {
   useEffect(() => {
     fetchTimeSlots();
     fetchServices();
-    fetchTherapists();
   }, []);
 
   useEffect(() => {
-    if (selectedTherapist) {
-      form.setFieldsValue({
-        therapist: selectedTherapist.account.id
-      });
-    }
-
     if (selectedService) {
       form.setFieldsValue({
         services: selectedService.id
@@ -67,7 +60,7 @@ const Schedule = () => {
       });
     }
 
-    if (selectedService || selectedTherapist) {
+    if (selectedService) {
       if (detailsSectionRef.current) {
         detailsSectionRef.current.scrollIntoView({
           behavior: 'smooth',
@@ -75,7 +68,14 @@ const Schedule = () => {
         });
       }
     }
-  }, [selectedTherapist, selectedService, services, form, userData]);
+  }, [selectedService, services, form, userData]);
+
+  // Thêm useEffect để fetch therapists dựa trên ngày và slot đã chọn
+  useEffect(() => {
+    if (selectedDate && selectedSlot) {
+      fetchTherapistsByDateAndSlot();
+    }
+  }, [selectedDate, selectedSlot]);
 
   const handleBookForSelfChange = (checked) => {
     setBookForSelf(checked);
@@ -119,13 +119,27 @@ const Schedule = () => {
     }
   };
 
-  const fetchTherapists = async () => {
+  const fetchTherapistsByDateAndSlot = async () => {
     try {
-      const response = await getAllSkinTherapists();
-      setTherapists(response.data || []);
       setLoading(prev => ({ ...prev, therapists: true }));
+
+      form.setFieldsValue({ therapist: undefined });
+
+      const params = {
+        workingDate: selectedDate.format('YYYY-MM-DD'),
+        slotId: selectedSlot
+      };
+
+      const response = await getAllSkinTherapistByWorkingDateAndSlotId(params);
+      setTherapists(response || []);
+
+      if (response && response.length === 0) {
+        toast.info('No therapists available for the selected date and time slot');
+      }
     } catch (error) {
       console.error('Failed to fetch therapists:', error);
+      toast.error('Failed to fetch available therapists');
+      setTherapists([]);
     } finally {
       setLoading(prev => ({ ...prev, therapists: false }));
     }
@@ -166,7 +180,13 @@ const Schedule = () => {
 
   const handleDateChange = (date) => {
     setSelectedDate(date);
-    form.setFieldsValue({ timeSlot: undefined });
+    form.setFieldsValue({ timeSlot: undefined, therapist: undefined });
+    setSelectedSlot(null);
+    setTherapists([]);
+  };
+
+  const handleTimeSlotChange = (slotId) => {
+    setSelectedSlot(slotId);
   };
 
   const handleCreateBooking = async (values) => {
@@ -245,23 +265,6 @@ const Schedule = () => {
             <Row gutter={24} className='mt-4'>
               <Col xs={24} md={12}>
                 <Form.Item
-                  label="Select Therapist"
-                  name="therapist"
-                  rules={[{ required: true, message: 'Please select a therapist' }]}
-                >
-                  <Select
-                    loading={loading.therapists}
-                    placeholder="Select a skin therapist"
-                  >
-                    {therapists.map(therapist => (
-                      <Option key={therapist?.account?.id} value={therapist?.account?.id}>
-                        {therapist?.account?.fullName} - {therapist?.specialization.split(',')[0]}
-                      </Option>
-                    ))}
-                  </Select>
-                </Form.Item>
-
-                <Form.Item
                   label="Select Services"
                   name="services"
                   rules={[{ required: true, message: 'Please select a service' }]}
@@ -277,9 +280,7 @@ const Schedule = () => {
                     ))}
                   </Select>
                 </Form.Item>
-              </Col>
 
-              <Col xs={24} md={12}>
                 <Form.Item
                   label="Appointment Date"
                   name="date"
@@ -291,29 +292,50 @@ const Schedule = () => {
                     onChange={handleDateChange}
                   />
                 </Form.Item>
+              </Col>
 
+              <Col xs={24} md={12}>
                 <Form.Item
                   label="Available Time Slots"
                   name="timeSlot"
                   rules={[{ required: true, message: 'Please select a time slot' }]}
                 >
-                  <Radio.Group className="w-full"
-                    loading={loading.slots ? 'true' : 'false'}>
-                    <Card className="w-full" size="small">
-                      <Space wrap>
-                        {timeSlots.map((slot) => (
-                          <Radio.Button
-                            key={slot.id}
-                            value={slot.id}
-                            className="mb-2"
-                            disabled={isSlotDisabled(slot)}
-                          >
-                            {`Slot ${slot.slotNumber} (${slot.startTime} - ${slot.endTime})`}
-                          </Radio.Button>
-                        ))}
-                      </Space>
-                    </Card>
+                  <Radio.Group
+                    className="w-full"
+                    loading={loading.slots ? 'true' : 'false'}
+                    onChange={(e) => handleTimeSlotChange(e.target.value)}
+                  >
+                    <Space wrap>
+                      {timeSlots.map((slot) => (
+                        <Radio.Button
+                          key={slot.id}
+                          value={slot.id}
+                          className="mb-2"
+                          disabled={isSlotDisabled(slot)}
+                        >
+                          {`Slot ${slot.slotNumber} (${slot.startTime} - ${slot.endTime})`}
+                        </Radio.Button>
+                      ))}
+                    </Space>
                   </Radio.Group>
+                </Form.Item>
+
+                <Form.Item
+                  label="Select Skin Therapist"
+                  name="therapist"
+                  rules={[{ required: true, message: 'Please select a therapist' }]}
+                >
+                  <Select
+                    loading={loading.therapists}
+                    placeholder={selectedDate && selectedSlot ? "Select a skin therapist" : "Please select date and time slot first"}
+                    disabled={!selectedDate || !selectedSlot}
+                  >
+                    {therapists.map(therapist => (
+                      <Option key={therapist?.account?.id} value={therapist?.account?.id}>
+                        {therapist?.account?.fullName} - {therapist?.specialization.split(',')[0]}
+                      </Option>
+                    ))}
+                  </Select>
                 </Form.Item>
               </Col>
             </Row>

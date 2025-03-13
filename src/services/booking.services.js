@@ -42,9 +42,7 @@ export const getAllBookings = async (data) => {
 
 export const getBookingDetailById = async (id) => {
   try {
-    const response = await axiosInstance.get(
-      `/api/v1/bookings/${id}`
-    );
+    const response = await axiosInstance.get(`/api/v1/bookings/${id}`);
     return response.data;
   } catch (error) {
     throw error;
@@ -54,6 +52,20 @@ export const getBookingDetailById = async (id) => {
 export const createBookings = async (data) => {
   try {
     const response = await axiosInstance.post(`/api/v1/bookings/create`, data);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const getAllSkinTherapistByWorkingDateAndSlotId = async (params) => {
+  try {
+    const response = await axiosInstance.get(
+      `/api/v1/skin-therapists/get-all-by-working-date-and-slotId`,
+      {
+        params: params,
+      }
+    );
     return response.data;
   } catch (error) {
     throw error;

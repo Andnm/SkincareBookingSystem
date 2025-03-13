@@ -68,7 +68,7 @@ const SkinTherapist = () => {
                 <Card bodyStyle={{ padding: 0 }}>
                   <Row>
                     <Col xs={24} sm={8} className="relative">
-                      <div className="w-full h-full flex flex-col items-center justify-between p-4 ">
+                      <div className="w-full h-full flex flex-col items-center justify-center p-4 ">
                         <div className='w-full h-[300px]'>
                           <img
                             src={therapist?.account?.accountImages ? therapist?.account?.accountImages[0] : therapist?.account?.imgLinks}
@@ -76,7 +76,7 @@ const SkinTherapist = () => {
                             className="w-full h-full object-cover"
                           />
                         </div>
-                        <div className="flex justify-center w-full">
+                        {/* <div className="flex justify-center w-full">
                           <Button
                             type="primary"
                             size="large"
@@ -84,7 +84,7 @@ const SkinTherapist = () => {
                           >
                             Book Appointment
                           </Button>
-                        </div>
+                        </div> */}
                       </div>
                     </Col>
 
