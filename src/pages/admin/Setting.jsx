@@ -21,9 +21,15 @@ import {
     createServiceType,
     createSkinIssue,
     createSkinType,
+    deleteServiceType,
+    deleteSkinIssue,
+    deleteSkinType,
     getAllServiceType,
     getAllSkinIssue,
     getAllSkinType,
+    updateServiceType,
+    updateSkinIssue,
+    updateSkinType,
 } from '../../services/service.services';
 import { toast } from 'react-toastify';
 import { getAllSlots, createSlot, updateSlot, deleteSlot } from '../../services/workingSchedule.services';
@@ -57,6 +63,7 @@ const Setting = () => {
             setListData(data.data);
         } catch (error) {
             toast.error(`Failed to fetch ${buttonType} data`);
+            toast.error(error?.response?.data?.message);
             console.error(error);
             setListData([]);
         } finally {
@@ -102,72 +109,115 @@ const Setting = () => {
             addForm.resetFields();
         } catch (error) {
             toast.error(`Failed to add ${activeButton}`);
+            toast.error(error?.response?.data?.message);
             console.error(error);
         }
     };
 
     const handleEdit = (item) => {
+        setCurrentEditItem(item);
+
         if (activeButton === 'Slots') {
-            setCurrentEditItem(item);
             editForm.setFieldsValue({
-                slotNumber: item.slotNumber,
+                name: item.name,
+                duration: item.duration,
                 startTime: item.startTime,
                 endTime: item.endTime,
             });
-            setIsEditModalVisible(true);
         } else {
-            Modal.confirm({
-                title: 'Edit Item',
-                content: `Are you sure you want to edit ${item.name}?`,
-                onOk() {
-                    console.log('Edit', item);
-                    toast.info(`Editing ${item.name}`);
-                },
-            });
+            editForm.setFieldsValue({ name: item.name });
         }
+
+        setIsEditModalVisible(true);
     };
 
-    const handleUpdateSlot = async () => {
+    const handleUpdateItem = async () => {
         try {
             await editForm.validateFields();
             const formValues = editForm.getFieldsValue();
 
+            let updateApiCall;
+            switch (activeButton) {
+                case 'Skin Issues':
+                    updateApiCall = updateSkinIssue;
+                    break;
+                case 'Skin Type':
+                    updateApiCall = updateSkinType;
+                    break;
+                case 'Service Type':
+                    updateApiCall = updateServiceType;
+                    break;
+                case 'Slots':
+                    updateApiCall = updateSlot;
+                    break;
+                default:
+                    return;
+            }
+
             setLoading(true);
-            await updateSlot(currentEditItem.id, formValues);
+            await updateApiCall(currentEditItem.id, formValues);
 
-            await fetchData(getAllSlots, 'Slots');
+            await fetchData(
+                activeButton === 'Skin Issues' ? getAllSkinIssue :
+                    activeButton === 'Skin Type' ? getAllSkinType :
+                        activeButton === 'Service Type' ? getAllServiceType :
+                            activeButton === 'Slots' ? getAllSlots : null,
+                activeButton
+            );
 
-            toast.success('Slot updated successfully');
+            toast.success(`${activeButton} updated successfully`);
             setIsEditModalVisible(false);
         } catch (error) {
-            toast.error('Failed to update slot');
+            toast.error(`Failed to update ${activeButton}`);
+            toast.error(error?.response?.data?.message);
             console.error(error);
         } finally {
             setLoading(false);
         }
     };
 
+
     const handleDelete = (item) => {
         Modal.confirm({
             title: 'Delete Item',
-            content: `Are you sure you want to delete ${activeButton === 'Slots' ? `Slot ${item.slotNumber}` : item.name}?`,
+            content: `Are you sure you want to delete ${item.name}?`,
             okText: 'Yes',
             okType: 'danger',
             cancelText: 'No',
             onOk: async () => {
                 try {
-                    setLoading(true);
-
-                    if (activeButton === 'Slots') {
-                        await deleteSlot(item.id);
-                        await fetchData(getAllSlots, 'Slots');
-                        toast.success(`Deleted Slot ${item.slotNumber}`);
-                    } else {
-                        console.log('Delete', item);
-                        toast.warning(`Deleted ${item.name}`);
+                    let deleteApiCall;
+                    switch (activeButton) {
+                        case 'Skin Issues':
+                            deleteApiCall = deleteSkinIssue;
+                            break;
+                        case 'Skin Type':
+                            deleteApiCall = deleteSkinType;
+                            break;
+                        case 'Service Type':
+                            deleteApiCall = deleteServiceType;
+                            break;
+                        case 'Slots':
+                            deleteApiCall = deleteSlot;
+                            break;
+                        default:
+                            return;
                     }
+    
+                    setLoading(true);
+                    await deleteApiCall(item.id);
+    
+                    await fetchData(
+                        activeButton === 'Skin Issues' ? getAllSkinIssue :
+                        activeButton === 'Skin Type' ? getAllSkinType :
+                        activeButton === 'Service Type' ? getAllServiceType :
+                        activeButton === 'Slots' ? getAllSlots : null,
+                        activeButton
+                    );
+    
+                    toast.success(`${activeButton} deleted successfully`);
                 } catch (error) {
-                    toast.error(`Failed to delete ${activeButton === 'Slots' ? 'slot' : item.name}`);
+                    toast.error(`Failed to delete ${activeButton}`);
                     console.error(error);
                 } finally {
                     setLoading(false);
@@ -175,15 +225,15 @@ const Setting = () => {
             },
         });
     };
-
+    
     const renderEditModal = () => {
         if (!currentEditItem) return null;
 
         return (
             <Modal
-                title={`Edit Slot ${currentEditItem.slotNumber}`}
+                title={`Edit ${activeButton}`}
                 open={isEditModalVisible}
-                onOk={handleUpdateSlot}
+                onOk={handleUpdateItem}
                 onCancel={() => {
                     setIsEditModalVisible(false);
                     setCurrentEditItem(null);
@@ -192,26 +242,38 @@ const Setting = () => {
             >
                 <Form form={editForm} layout="vertical">
                     <Form.Item
-                        name="slotNumber"
-                        label="Slot Number"
-                        rules={[{ required: true, message: 'Please input slot number!' }]}
+                        name="name"
+                        label="Name"
+                        rules={[{ required: true, message: 'Please input name!' }]}
                     >
-                        <Input type="number" />
+                        <Input />
                     </Form.Item>
-                    <Form.Item
-                        name="startTime"
-                        label="Start Time"
-                        rules={[{ required: true, message: 'Please input start time!' }]}
-                    >
-                        <Input placeholder="HH:MM" />
-                    </Form.Item>
-                    <Form.Item
-                        name="endTime"
-                        label="End Time"
-                        rules={[{ required: true, message: 'Please input end time!' }]}
-                    >
-                        <Input placeholder="HH:MM" />
-                    </Form.Item>
+
+                    {activeButton === 'Slots' && (
+                        <>
+                            <Form.Item
+                                name="duration"
+                                label="Duration (minutes)"
+                                rules={[{ required: true, message: 'Please input duration!' }]}
+                            >
+                                <Input type="number" />
+                            </Form.Item>
+                            <Form.Item
+                                name="startTime"
+                                label="Start Time"
+                                rules={[{ required: true, message: 'Please input start time!' }]}
+                            >
+                                <Input type="time" />
+                            </Form.Item>
+                            <Form.Item
+                                name="endTime"
+                                label="End Time"
+                                rules={[{ required: true, message: 'Please input end time!' }]}
+                            >
+                                <Input type="time" />
+                            </Form.Item>
+                        </>
+                    )}
                 </Form>
             </Modal>
         );

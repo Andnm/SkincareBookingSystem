@@ -97,17 +97,18 @@ const CreateNewService = ({ onServiceCreated }) => {
                         });
                     }
 
-                    await createNewService(formData);
+                    const responseCreate = await createNewService(formData);
 
                     toast.success("Service created successfully!");
 
                     if (onServiceCreated) {
-                        onServiceCreated();
+                        await onServiceCreated();
                     }
 
                     handleCancel();
                 } catch (error) {
                     toast.error("Service creation failed! Please try again.");
+                    toast.error(error?.response?.data?.message);
                     console.error("Error creating service:", error);
                 } finally {
                     setLoading(false);

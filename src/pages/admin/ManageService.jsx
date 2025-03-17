@@ -10,18 +10,22 @@ import {
   Typography,
   Tag,
   InputNumber,
-  DatePicker
+  DatePicker,
+  Modal,
+  message
 } from "antd";
 import { IoIosMore } from "react-icons/io";
 import { toast } from "react-toastify";
 import { useSelector } from "react-redux";
 import { userSelector } from "../../redux/selectors/selector";
-import { getAllServices } from "../../services/service.services";
+import { getAllServices, updateService, deleteService } from "../../services/service.services";
 import ServiceDetailModal from "../../components/manage/ServiceDetailModal";
 import CreateNewService from "../../components/manage/CreateNewService";
+import EditServiceModal from "../../components/manage/EditServiceModal";
 
 const { Option } = Select;
 const { Text } = Typography;
+const { confirm } = Modal;
 
 const ManageService = () => {
   const userData = useSelector(userSelector);
@@ -31,6 +35,7 @@ const ManageService = () => {
 
   const [selectedServiceId, setSelectedServiceId] = useState(null);
   const [isDetailModalVisible, setIsDetailModalVisible] = useState(false);
+  const [isEditModalVisible, setIsEditModalVisible] = useState(false);
 
   const [serviceName, setServiceName] = useState("");
   const [fromPrice, setFromPrice] = useState(null);
@@ -38,41 +43,40 @@ const ManageService = () => {
   const [fromCreatedDate, setFromCreatedDate] = useState(null);
 
   const [orderBy, setOrderBy] = useState("");
-  const [isAscending, setIsAscending] = useState(true);
+  const [isAscending, setIsAscending] = useState(false);
   const [pageIndex, setPageIndex] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [totalRows, setTotalRows] = useState(0);
 
-  useEffect(() => {
-    const fetchServices = async () => {
-      if (userData) {
-        setIsLoading(true);
-        try {
-          const params = {
-            Name: serviceName || null,
-            FromPrice: fromPrice,
-            FromDuration: fromDuration,
-            FromCreatedDate: fromCreatedDate ? fromCreatedDate.toISOString() : null,
-            OrderBy: orderBy,
-            IsAscending: isAscending,
-            PageIndex: pageIndex - 1,
-            PageSize: pageSize,
-          };
+  const fetchServices = async () => {
+    if (userData) {
+      setIsLoading(true);
+      try {
+        const params = {
+          Name: serviceName || null,
+          FromPrice: fromPrice,
+          FromDuration: fromDuration,
+          FromCreatedDate: fromCreatedDate ? fromCreatedDate.toISOString() : null,
+          OrderBy: orderBy,
+          IsAscending: isAscending,
+          PageIndex: pageIndex - 1,
+          PageSize: pageSize,
+        };
 
-          const responseGetAllServices = await getAllServices(params);
-          console.log("responseGetAllServices: ", responseGetAllServices)
-          setServiceData([...responseGetAllServices.data]);
-          setTotalRows(responseGetAllServices.totalRows);
-        } catch (error) {
-          toast.error("There was an error loading services!");
-          toast.error(error.response?.data?.message);
-          console.error("Error loading services:", error);
-        } finally {
-          setIsLoading(false);
-        }
+        const responseGetAllServices = await getAllServices(params);
+        setServiceData([...responseGetAllServices.data]);
+        setTotalRows(responseGetAllServices.totalRows);
+      } catch (error) {
+        toast.error("There was an error loading services!");
+        toast.error(error.response?.data?.message);
+        console.error("Error loading services:", error);
+      } finally {
+        setIsLoading(false);
       }
-    };
+    }
+  };
 
+  useEffect(() => {
     fetchServices();
   }, [
     serviceName,
@@ -92,14 +96,56 @@ const ManageService = () => {
   };
 
   const handleViewDetails = (serviceId) => {
-    console.log("serviceId page: ", serviceId)
     setSelectedServiceId(serviceId);
     setIsDetailModalVisible(true);
+  };
+
+  const handleEditService = (serviceId) => {
+    setSelectedServiceId(serviceId);
+    setIsEditModalVisible(true);
+  };
+
+  const handleDeleteService = (serviceId) => {
+    confirm({
+      title: 'Are you sure you want to delete this service?',
+      content: 'This action cannot be undone.',
+      okText: 'Confirm',
+      okType: 'danger',
+      cancelText: 'Cancel',
+      onOk: async () => {
+        setIsLoading(true);
+        try {
+          await deleteService(serviceId);
+          toast.success("Service deleted successfully!");
+          fetchServices();
+        } catch (error) {
+          toast.error("Failed to delete service!");
+          toast.error(error.response?.data?.message);
+          console.error("Error deleting service:", error);
+        } finally {
+          setIsLoading(false);
+        }
+      },
+    });
+  };
+
+  const handleServiceUpdated = (updatedService) => {
+    setServiceData(prevData => 
+      prevData.map(service => 
+        service.id === updatedService.id ? updatedService : service
+      )
+    );
+    setIsEditModalVisible(false);
   };
 
   const handleCloseDetailModal = () => {
     setSelectedServiceId(null);
     setIsDetailModalVisible(false);
+  };
+
+  const handleCloseEditModal = () => {
+    setSelectedServiceId(null);
+    setIsEditModalVisible(false);
   };
 
   const renderTags = (items) => {
@@ -114,9 +160,8 @@ const ManageService = () => {
     );
   };
 
-  const handleServiceCreated = (newAccount) => {
-    setServiceData((prevData) => [newAccount, ...prevData]);
-    setTotalRows((prevTotal) => prevTotal + 1);
+  const handleServiceCreated = async () => {
+    fetchServices();
   };
 
   const columns = [
@@ -130,14 +175,14 @@ const ManageService = () => {
       title: "Duration",
       key: "duration",
       sorter: true,
-      render: (_, record) => `${record.duration} ${record.durationUnit}`,
+      render: (_, record) => `${record?.duration} ${record.durationUnit}`,
     },
     {
       title: "Price",
       dataIndex: "price",
       key: "price",
       sorter: true,
-      render: (price, record) => `${price.toLocaleString()} ${record.moneyUnit}`,
+      render: (price, record) => `${price?.toLocaleString()} ${record.moneyUnit}`,
     },
     {
       title: "Skin Types",
@@ -171,6 +216,25 @@ const ManageService = () => {
                 className="flex items-center"
               >
                 View Details
+              </Button>
+            </Menu.Item>
+            <Menu.Item key="edit">
+              <Button
+                type="link"
+                onClick={() => handleEditService(record.id)}
+                className="flex items-center"
+              >
+                Edit Service
+              </Button>
+            </Menu.Item>
+            <Menu.Item key="delete">
+              <Button
+                type="link"
+                danger
+                onClick={() => handleDeleteService(record.id)}
+                className="flex items-center"
+              >
+                Delete Service
               </Button>
             </Menu.Item>
           </Menu>
@@ -276,6 +340,13 @@ const ManageService = () => {
         serviceId={selectedServiceId}
         visible={isDetailModalVisible}
         onClose={handleCloseDetailModal}
+      />}
+
+      {isEditModalVisible && <EditServiceModal
+        serviceId={selectedServiceId}
+        visible={isEditModalVisible}
+        onClose={handleCloseEditModal}
+        onServiceUpdated={handleServiceUpdated}
       />}
 
     </div>

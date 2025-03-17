@@ -3,6 +3,16 @@ export const ROLE_CUSTOMER = "Customer";
 export const ROLE_SKINTHERAPIST = "Skin Therapist";
 export const ROLE_STAFF = "Staff";
 
+export const BOOKING_TYPES = {
+  SINGLE_SLOT: 'Single_Slot',
+  MULTI_SLOT: 'Multi_Slot'
+};
+
+export const BOOKING_TYPE_LABELS = {
+  [BOOKING_TYPES.SINGLE_SLOT]: 'Single Slot',
+  [BOOKING_TYPES.MULTI_SLOT]: 'Multiple Slots'
+};
+
 export const menuItemsHeader = [
   { name: "About us", to: "/about-us" },
   { name: "Services", to: "/services" },

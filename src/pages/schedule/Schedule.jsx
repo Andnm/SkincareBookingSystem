@@ -11,6 +11,7 @@ import { getAllSkinTherapists } from '../../services/user.services';
 import { useSelector } from 'react-redux';
 import { userSelector } from '../../redux/selectors/selector';
 import { createBookings, getAllSkinTherapistByWorkingDateAndSlotId } from '../../services/booking.services';
+import { BOOKING_TYPE_LABELS, BOOKING_TYPES } from '../../utils/constants';
 
 dayjs.extend(customParseFormat);
 
@@ -31,6 +32,7 @@ const Schedule = () => {
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedSlot, setSelectedSlot] = useState(null);
   const [bookForSelf, setBookForSelf] = useState(true);
+  const [bookingType, setBookingType] = useState(BOOKING_TYPES.SINGLE_SLOT);
   const [therapists, setTherapists] = useState([]);
   const [timeSlots, setTimeSlots] = useState([]);
   const [services, setServices] = useState([]);
@@ -70,7 +72,6 @@ const Schedule = () => {
     }
   }, [selectedService, services, form, userData]);
 
-  // Thêm useEffect để fetch therapists dựa trên ngày và slot đã chọn
   useEffect(() => {
     if (selectedDate && selectedSlot) {
       fetchTherapistsByDateAndSlot();
@@ -90,6 +91,16 @@ const Schedule = () => {
         fullName: undefined,
         email: undefined,
       });
+    }
+  };
+
+  const handleBookingTypeChange = (value) => {
+    if (value === BOOKING_TYPES.MULTI_SLOT) {
+      toast.warning('This function is currently not available.');
+      setBookingType(BOOKING_TYPES.SINGLE_SLOT);
+      form.setFieldsValue({ bookingType: BOOKING_TYPES.SINGLE_SLOT });
+    } else {
+      setBookingType(value);
     }
   };
 
@@ -207,13 +218,15 @@ const Schedule = () => {
           }
         }),
         bookingDate: values.date.format('YYYY-MM-DDTHH:mm:ss.SSSZ'),
-        type: 'ONLINE',
+        type: bookingType,
         bookForCustomerAccountOwner: bookForSelf,
         bookingSlotCreateDTO: {
           slotId: values.timeSlot,
           skinTherapistId: values.therapist
         }
       };
+
+      console.log("bookingData: ", bookingData)
 
       const response = await createBookings(bookingData);
 
@@ -253,6 +266,7 @@ const Schedule = () => {
           form={form}
           layout="vertical"
           onFinish={handleCreateBooking}
+          initialValues={{ bookingType: BOOKING_TYPES.SINGLE_SLOT }}
         >
           <Card className="mb-8">
             <Title level={4} className="mb-6" style={{
@@ -291,6 +305,17 @@ const Schedule = () => {
                     disabledDate={disabledDate}
                     onChange={handleDateChange}
                   />
+                </Form.Item>
+
+                <Form.Item
+                  label="Booking Type"
+                  name="bookingType"
+                  rules={[{ required: true, message: 'Please select a booking type' }]}
+                >
+                  <Select onChange={handleBookingTypeChange}>
+                    <Option value={BOOKING_TYPES.SINGLE_SLOT}>{BOOKING_TYPE_LABELS[BOOKING_TYPES.SINGLE_SLOT]}</Option>
+                    <Option value={BOOKING_TYPES.MULTI_SLOT}>{BOOKING_TYPE_LABELS[BOOKING_TYPES.MULTI_SLOT]}</Option>
+                  </Select>
                 </Form.Item>
               </Col>
 
@@ -331,7 +356,7 @@ const Schedule = () => {
                     disabled={!selectedDate || !selectedSlot}
                   >
                     {therapists.map(therapist => (
-                      <Option key={therapist?.account?.id} value={therapist?.account?.id}>
+                      <Option key={therapist?.id} value={therapist?.id}>
                         {therapist?.account?.fullName} - {therapist?.specialization.split(',')[0]}
                       </Option>
                     ))}

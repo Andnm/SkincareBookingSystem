@@ -47,6 +47,24 @@ export const getServiceDetailById = async (serviceId) => {
   }
 };
 
+export const updateService = async (id, data) => {
+  try {
+    const response = await axiosInstance.put(`/api/v1/services/${id}`, data);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const deleteService = async (id) => {
+  try {
+    const response = await axiosInstance.delete(`/api/v1/services/${id}`);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
 export const createNewService = async (formData) => {
   try {
     const response = await axiosInstance.post(
@@ -85,6 +103,60 @@ export const createSkinType = async (data) => {
 export const createServiceType = async (data) => {
   try {
     const response = await axiosInstance.post(`/api/v1/types`, data);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const updateSkinIssue = async (id, data) => {
+  try {
+    const response = await axiosInstance.put(`/api/v1/skin-issues/${id}`, data);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const updateSkinType = async (id, data) => {
+  try {
+    const response = await axiosInstance.put(`/api/v1/skin-types/${id}`, data);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const updateServiceType = async (id, data) => {
+  try {
+    const response = await axiosInstance.put(`/api/v1/types/${id}`, data);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const deleteSkinIssue = async (id) => {
+  try {
+    const response = await axiosInstance.delete(`/api/v1/skin-issues/${id}`);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const deleteSkinType = async (id) => {
+  try {
+    const response = await axiosInstance.delete(`/api/v1/skin-types/${id}`);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const deleteServiceType = async (id) => {
+  try {
+    const response = await axiosInstance.delete(`/api/v1/types/${id}`);
     return response.data;
   } catch (error) {
     throw error;
