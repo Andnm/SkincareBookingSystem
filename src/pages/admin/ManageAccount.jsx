@@ -32,6 +32,7 @@ import {
   handleActionNotSupport,
 } from "../../utils/helpers";
 import CreateAccount from "../../components/manage/CreateAccountButton";
+import AccountDetailModal from "../../components/manage/AccountDetailModal";
 
 const { Option } = Select;
 const { confirm } = Modal;
@@ -43,6 +44,10 @@ const ManageAccount = () => {
 
   const [isLoading, setIsLoading] = useState(false);
   const [processingData, setProcessingData] = useState([]);
+
+  const [selectedAccountId, setSelectedAccountId] = useState(null);
+  const [isDetailModalVisible, setIsDetailModalVisible] = useState(false);
+
   const [searchText, setSearchText] = useState("");
   const [typeSearch, setTypeSearch] = useState("email");
   const [orderBy, setOrderBy] = useState("");
@@ -93,6 +98,16 @@ const ManageAccount = () => {
     setTotalRows((prevTotal) => prevTotal + 1);
   };
 
+  const handleViewDetails = (accountId) => {
+    setSelectedAccountId(accountId);
+    setIsDetailModalVisible(true);
+  };
+
+  const handleCloseDetailModal = () => {
+    setSelectedAccountId(null);
+    setIsDetailModalVisible(false);
+  };
+
   const columns = [
     {
       title: "ManageAccount",
@@ -101,7 +116,7 @@ const ManageAccount = () => {
       render: (text, record) => (
         <div style={{ display: "flex", alignItems: "center" }}>
           <Avatar
-            src={record.avatar_url || generateFallbackAvatar(record.fullName)}
+            src={record.accountImages?.[0] || generateFallbackAvatar(record.fullName)}
             alt={record.fullName}
             style={{ marginRight: "8px", border: "1px solid #d9d9d9" }}
             size={55}
@@ -165,9 +180,7 @@ const ManageAccount = () => {
             <Menu.Item key="view">
               <Button
                 type="link"
-                onClick={() => {
-                  handleActionNotSupport();
-                }}
+                onClick={() => handleViewDetails(record.id)}
                 icon={<BiDetail style={{ fontSize: "20px" }} />}
                 style={{ color: "black" }}
                 className="flex items-center"
@@ -260,6 +273,12 @@ const ManageAccount = () => {
             }}
           />
         </Spin>
+
+        {isDetailModalVisible && <AccountDetailModal
+          accountId={selectedAccountId}
+          visible={isDetailModalVisible}
+          onClose={handleCloseDetailModal}
+        />}
       </div>
     </div>
   );

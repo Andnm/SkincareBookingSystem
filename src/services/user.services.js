@@ -11,6 +11,15 @@ export const getAllAccounts = async (data) => {
   }
 };
 
+export const getAccountById = async (accountId) => {
+  try {
+    const response = await axiosInstance.get(`/api/v1/accounts/${accountId}`);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
 export const updateAccounts = async (data) => {
   try {
     const response = await axiosInstance.put(`/api/v1/accounts`, data);
