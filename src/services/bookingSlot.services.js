@@ -11,9 +11,9 @@ export const getAllBookingSlotByBookingId = async (id) => {
   }
 };
 
-export const getBookingSlotDetailByBookingSlotId = async (id) => {
+export const getBookingSlotDetailByBookingSlotId = async (bookingSlotId) => {
   try {
-    const response = await axiosInstance.get(`/api/v1/booking-slots/${id}`);
+    const response = await axiosInstance.get(`/api/v1/booking-slots/${bookingSlotId}`);
     return response.data;
   } catch (error) {
     throw error;

@@ -226,11 +226,11 @@ const Schedule = () => {
         }
       };
 
-      console.log("bookingData: ", bookingData)
-
       const response = await createBookings(bookingData);
 
-      console.log("response bookings: ", response)
+      if (response?.paymentURL) {
+        window.location.href = response.paymentURL
+      }
 
       toast.success('Booking successful!');
       navigate('/account-history');

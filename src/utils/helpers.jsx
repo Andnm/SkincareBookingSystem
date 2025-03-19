@@ -8,6 +8,44 @@ import { ROLE_CUSTOMER, ROLE_MANAGER, ROLE_SKINTHERAPIST, ROLE_STAFF } from "./c
 import { GrTransaction } from "react-icons/gr";
 import { GoPerson } from "react-icons/go";
 import { IoSettingsOutline } from "react-icons/io5";
+import { Tag } from "antd";
+import {
+  ClockCircleOutlined,
+  CheckCircleOutlined,
+  CloseCircleOutlined
+} from "@ant-design/icons";
+
+export const getStatusTag = (status) => {
+  let color = "";
+  let icon = null;
+
+  switch (status?.toLowerCase()) {
+    case "done":
+    case "checked-out":
+      color = "green";
+      icon = <CheckCircleOutlined />;
+      break;
+    case "in_progress":
+      color = "processing";
+      icon = <ClockCircleOutlined />;
+      break;
+    case "incomplete":
+    case "cancelled":
+      color = "red";
+      icon = <CloseCircleOutlined />;
+      break;
+    case "pending":
+    default:
+      color = "blue";
+      icon = <ClockCircleOutlined />;
+  }
+
+  return (
+    <Tag color={color} icon={icon}>
+      {status}
+    </Tag>
+  );
+};
 
 export function formatDateTimeVN(isoString) {
   const date = new Date(isoString);

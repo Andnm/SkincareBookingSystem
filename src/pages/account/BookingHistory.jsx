@@ -19,9 +19,9 @@ import { userSelector } from "../../redux/selectors/selector";
 import { getAllBookings } from "../../services/booking.services";
 import { handleActionNotSupport } from "../../utils/helpers";
 import { IdcardOutlined } from "@ant-design/icons";
-import BookingDetailModal from "../../components/manage/BookingDetailModal";
 import AccountLayout from "../../components/layout/AccountLayout";
 import dayjs from "dayjs";
+import BookingDetailModal from "../../components/manage/BookingDetail/BookingDetailModal";
 
 const { Option } = Select;
 const { Text } = Typography;
