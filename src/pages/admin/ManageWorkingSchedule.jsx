@@ -11,6 +11,7 @@ import {
 } from '../../services/workingSchedule.services';
 import { toast } from 'react-toastify';
 import { SLOT_COLORS } from '../../utils/constants';
+import ApproveRequestButton from '../../components/manage/ApproveRequestButton';
 
 dayjs.locale('vi');
 
@@ -251,6 +252,9 @@ const ManageWorkingSchedule = () => {
           case 'Decline':
             color = 'red';
             break;
+          case 'Pending':
+            color = 'orange';
+            break;
           default:
             color = 'default';
         }
@@ -338,12 +342,19 @@ const ManageWorkingSchedule = () => {
               {getEnglishMonthName(currentDate)} {currentDate.year()}
             </Typography.Title>
 
-            <Button
-              onClick={() => handleMonthChange(1)}
-              loading={loading}
-            >
-              Next Month <RightOutlined />
-            </Button>
+            <div className="flex gap-2">
+              <ApproveRequestButton
+                onApprove={fetchWorkingSchedules}
+                onDecline={fetchWorkingSchedules}
+              />
+
+              <Button
+                onClick={() => handleMonthChange(1)}
+                loading={loading}
+              >
+                Next Month <RightOutlined />
+              </Button>
+            </div>
           </div>
         }
       >
@@ -384,7 +395,6 @@ const ManageWorkingSchedule = () => {
         )}
       </Modal>
 
-      {/* Decline Reason Modal */}
       <Modal
         title="Decline Working Schedule"
         open={declineModalVisible}
