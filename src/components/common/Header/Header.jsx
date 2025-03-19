@@ -3,6 +3,7 @@ import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { HiOutlineLogout } from "react-icons/hi";
 import { Avatar, Modal } from "antd";
+import { toast } from "react-toastify"; // Import toast từ react-toastify
 
 import logo from "../../../assets/images/logo.png";
 import LoginModal from "../../auth/LoginModal";
@@ -16,6 +17,7 @@ import {
   ROLE_MANAGER,
   ROLE_CUSTOMER,
   ROLE_STAFF,
+  ROLE_SKINTHERAPIST,
 } from "../../../utils/constants";
 import { FaUser } from "react-icons/fa";
 import { IoHome } from "react-icons/io5";
@@ -73,6 +75,15 @@ function Header() {
     dispatch(logoutUser());
   };
 
+  const handleScheduleClick = () => {
+    if (user?.user) {
+      navigate("/schedule");
+    } else {
+      toast.error("Please login first before booking");
+      showModal(true);
+    }
+  };
+
   const userRole = user?.user?.roleName;
 
   const filteredMenuItems = sliderMenuHeader.filter(item =>
@@ -107,13 +118,16 @@ function Header() {
           </div>
 
           <div className="flex flex-row gap-2">
-            <button
-              className="px-4 py-2 cursor-pointer post-button text-white rounded-lg flex items-center hover:bg-blue-600 hover:text-white hover:scale-105 hover:border-blue-500 transition-all duration-300"
-              onClick={() => navigate("/schedule")}
-            >
-              <BiCalendar className="mr-2" />
-              Schedule now
-            </button>
+            {user?.user?.roleName !== ROLE_SKINTHERAPIST
+              &&
+              <button
+                className="px-4 py-2 cursor-pointer post-button text-white rounded-lg flex items-center hover:bg-blue-600 hover:text-white hover:scale-105 hover:border-blue-500 transition-all duration-300"
+                onClick={handleScheduleClick}
+              >
+                <BiCalendar className="mr-2" />
+                Schedule now
+              </button>
+            }
 
             <div
               className="relative"

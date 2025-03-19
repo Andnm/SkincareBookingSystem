@@ -16,9 +16,9 @@ export const BOOKING_TYPE_LABELS = {
 export const menuItemsHeader = [
   { name: "About us", to: "/about-us" },
   { name: "Services", to: "/services" },
-  { name: "Test", to: "/test" },
+  // { name: "Test", to: "/test" },
   { name: "Connection", to: "/skin-therapist" },
-  { name: "Blog", to: "/blogs" },
+  // { name: "Blog", to: "/blogs" },
 ];
 
 export const list_services_data_sample = [

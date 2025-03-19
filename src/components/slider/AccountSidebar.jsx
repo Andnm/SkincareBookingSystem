@@ -116,7 +116,7 @@ const AccountSidebar = () => {
                   </Link>
                 </li>
 
-                <li>
+                {/* <li>
                   <Link
                     to="/account/change-password"
                     className={`flex flex-row items-center gap-2 py-2 px-10 mx-2 text-sm rounded-lg transition-all duration-200 ${isActive("/account/change-password")
@@ -134,7 +134,7 @@ const AccountSidebar = () => {
                     </div>
                     Change password
                   </Link>
-                </li>
+                </li> */}
               </ul>
             )}
           </li>

@@ -73,12 +73,12 @@ export function formatDateTimeVN(isoString) {
 }
 
 export const sliderMenu = [
-  {
-    key: "dashboard",
-    icon: <AiOutlineDashboard />,
-    label: "Dashboard",
-    roles: [ROLE_MANAGER],
-  },
+  // {
+  //   key: "dashboard",
+  //   icon: <AiOutlineDashboard />,
+  //   label: "Dashboard",
+  //   roles: [ROLE_MANAGER],
+  // },
   {
     key: "manage-accounts",
     icon: <GoPerson />,
