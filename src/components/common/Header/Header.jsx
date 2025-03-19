@@ -9,7 +9,7 @@ import LoginModal from "../../auth/LoginModal";
 import RegisterModal from "../../auth/RegisterModal";
 import { userSelector } from "../../../redux/selectors/selector";
 import { logoutUser } from "../../../redux/reducers/userReducer";
-import { generateFallbackAvatar } from "../../../utils/helpers";
+import { generateFallbackAvatar, sliderMenuHeader } from "../../../utils/helpers";
 import { getCurrentUserThunk } from "../../../redux/actions/userThunk";
 import {
   menuItemsHeader,
@@ -72,6 +72,12 @@ function Header() {
     navigate("/");
     dispatch(logoutUser());
   };
+
+  const userRole = user?.user?.roleName;
+
+  const filteredMenuItems = sliderMenuHeader.filter(item =>
+    item.roles.includes(userRole)
+  );
 
   return (
     <header className="header-home-page border-b border-gray-200">
@@ -157,13 +163,16 @@ function Header() {
               {user?.user && isDropdownOpen && (
                 <div className="absolute right-0 w-56 bg-white border border-gray-300 rounded-lg shadow-lg z-10">
                   <ul className="py-3">
-                    <li
-                      className="px-8 py-2 flex flex-row gap-2 items-center hover:bg-gray-100 hover:text-blue-800 cursor-pointer"
-                      onClick={() => navigate("/account")}
-                    >
-                      <FaUser className="text-sm" />
-                      Profile
-                    </li>
+                    {filteredMenuItems.map(item => (
+                      <li
+                        key={item.key}
+                        className="px-8 py-2 flex flex-row gap-2 items-center hover:bg-gray-100 hover:text-blue-800 cursor-pointer"
+                        onClick={() => navigate(item.key)}
+                      >
+                        <span className="text-sm">{item.icon}</span>
+                        {item.label}
+                      </li>
+                    ))}
 
                     <li
                       className="px-8 py-2 flex flex-row gap-2 items-center hover:bg-gray-100 text-red-500 cursor-pointer"

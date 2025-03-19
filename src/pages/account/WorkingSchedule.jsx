@@ -61,7 +61,7 @@ const WorkingSchedule = () => {
         const registrationData = selectedDates.flatMap(date =>
             selectedSlots.map(slotId => ({
                 slotId: slotId,
-                workingDate: date.toISOString()
+                workingDate: date.format('YYYY-MM-DD')
             }))
         );
 
@@ -80,6 +80,7 @@ const WorkingSchedule = () => {
                     fetchWorkingSchedules();
                 } catch (error) {
                     toast.error('Failed to register working schedules');
+                    toast.error(error?.response?.data?.message);
                     console.error(error);
                 }
             }

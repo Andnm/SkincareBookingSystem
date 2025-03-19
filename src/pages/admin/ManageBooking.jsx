@@ -37,10 +37,9 @@ const ManageBooking = () => {
   const [paymentStatus, setPaymentStatus] = useState("");
   const [totalAmount, setTotalAmount] = useState(null);
   const [fromCreatedDate, setFromCreatedDate] = useState(null);
-  const [toCreatedDate, setToCreatedDate] = useState(null);
 
   const [orderBy, setOrderBy] = useState("");
-  const [isAscending, setIsAscending] = useState(true);
+  const [isAscending, setIsAscending] = useState(false);
   const [pageIndex, setPageIndex] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [totalRows, setTotalRows] = useState(0);
@@ -53,7 +52,6 @@ const ManageBooking = () => {
           const params = {
             TotalAmount: totalAmount,
             FromCreatedDate: fromCreatedDate ? fromCreatedDate.toISOString() : null,
-            ToCreatedDate: toCreatedDate ? toCreatedDate.toISOString() : null,
             OrderBy: orderBy,
             IsAscending: isAscending,
             PageIndex: pageIndex - 1,
@@ -64,7 +62,6 @@ const ManageBooking = () => {
           setBookingData([...responseGetAllBookings.data]);
           setTotalRows(responseGetAllBookings.totalRows);
         } catch (error) {
-          toast.error("There was an error loading bookings!");
           toast.error(error.response?.data?.message);
           console.error("Error loading bookings:", error);
         } finally {
@@ -77,7 +74,6 @@ const ManageBooking = () => {
   }, [
     totalAmount,
     fromCreatedDate,
-    toCreatedDate,
     orderBy,
     isAscending,
     pageIndex,
@@ -158,6 +154,11 @@ const ManageBooking = () => {
       render: (value) => (value ? "Yes" : "No"),
     },
     {
+      title: "Created At",
+      dataIndex: "createdAt",
+      key: "createdAt",
+    },
+    {
       title: "Actions",
       key: "actions",
       align: "center",
@@ -229,11 +230,10 @@ const ManageBooking = () => {
 
         <div className="flex items-center">
           <Text strong className="mr-2">Created Date:</Text>
-          <RangePicker
-            onChange={(dates) => {
-              setFromCreatedDate(dates?.[0]);
-              setToCreatedDate(dates?.[1]);
-            }}
+          <DatePicker
+            value={fromCreatedDate}
+            onChange={(date) => setFromCreatedDate(date)}
+            allowClear={false}
           />
         </div>
 

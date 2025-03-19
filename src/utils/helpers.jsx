@@ -82,7 +82,7 @@ export const sliderMenu = [
     key: "/account-history",
     icon: <FaHistory />,
     label: "History of Booking",
-    roles: [ROLE_CUSTOMER],
+    roles: [ROLE_CUSTOMER, ROLE_SKINTHERAPIST],
   },
   {
     key: "/account-working-schedule",
@@ -92,7 +92,26 @@ export const sliderMenu = [
   }
 ];
 
-
+export const sliderMenuHeader = [
+  {
+    key: "/account",
+    icon: <FaUser />,
+    label: "Profile",
+    roles: [ROLE_CUSTOMER, ROLE_SKINTHERAPIST],
+  },
+  {
+    key: "/account-history",
+    icon: <FaHistory />,
+    label: "History of Booking",
+    roles: [ROLE_CUSTOMER, ROLE_SKINTHERAPIST],
+  },
+  {
+    key: "/account-working-schedule",
+    icon: <FaCalendarAlt />,
+    label: "Working Schedule",
+    roles: [ROLE_SKINTHERAPIST],
+  }
+];
 
 export const filterMenuByRole = (menu, role) => {
   if (!role) return [];
