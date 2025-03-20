@@ -35,15 +35,33 @@ export const loginWithGoogle = async (credentials) => {
 
 export const register = async (userData) => {
   try {
+    const formData = new FormData();
+    s
+    formData.append("Phone", userData.phone);
+    formData.append("Address", userData.address || "");
+    formData.append("Email", userData.email);
+    formData.append("Password", userData.password);
+    formData.append("FullName", userData.fullName);
+    formData.append("Age", userData.age || 0);
+    formData.append("Gender", userData.gender);
+    
+    formData.append("Images", "");
+    
     const response = await axiosInstance.post(
       "/api/v1/accounts/sign-up",
-      userData
+      formData,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      }
     );
     return response.data;
   } catch (error) {
     throw error;
   }
 };
+
 
 export const forgotPassword = async (email) => {
   try {

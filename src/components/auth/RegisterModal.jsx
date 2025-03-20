@@ -35,7 +35,7 @@ const RegisterModal = ({ setIsLoginModal, triggerCancel }) => {
       toast.warning("Re-enter wrong password");
       return;
     }
-
+  
     const data = {
       email: formData.email,
       password: formData.password,
@@ -45,12 +45,14 @@ const RegisterModal = ({ setIsLoginModal, triggerCancel }) => {
       age: 0,
       address: "",
       gender: formData.gender,
+      // Thêm mảng Images rỗng
+      images: []
     };
-
+  
     console.log("data: ", data);
-
+  
     setIsLoading(true);
-
+  
     try {
       const responseRegister = await dispatch(registerThunk(data));
       if (registerThunk.rejected.match(responseRegister)) {
@@ -61,7 +63,7 @@ const RegisterModal = ({ setIsLoginModal, triggerCancel }) => {
           password: formData.password,
         };
         const responseLogin = await dispatch(loginThunk(credentials));
-
+  
         if (loginThunk.rejected.match(responseLogin)) {
           toast.error(responseLogin.payload.response.data.message);
         } else {
@@ -83,6 +85,7 @@ const RegisterModal = ({ setIsLoginModal, triggerCancel }) => {
       setIsLoading(false);
     }
   };
+  
 
   return (
     <div className="flex items-center justify-center">
