@@ -36,7 +36,7 @@ export const loginWithGoogle = async (credentials) => {
 export const register = async (userData) => {
   try {
     const formData = new FormData();
-    s
+    
     formData.append("Phone", userData.phone);
     formData.append("Address", userData.address || "");
     formData.append("Email", userData.email);
