@@ -61,11 +61,10 @@ const LoginModal = ({ setIsLoginModal, triggerCancel }) => {
 
         switch (roleName) {
           case ROLE_MANAGER:
-          case ROLE_STAFF:
-            navigate("/dashboard");
+            navigate("/manage-accounts");
             break;
-          case ROLE_CUSTOMER:
-            navigate("/");
+          case ROLE_STAFF:
+            navigate("/manage-bookings");
             break;
           default:
             navigate("/");

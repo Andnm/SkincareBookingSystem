@@ -51,7 +51,7 @@ const Router = () => {
       </Route>
 
       <Route element={<AdminLayout />}>
-        <Route path="/dashboard" element={<Dashboard />} />
+        {/* <Route path="/dashboard" element={<Dashboard />} /> */}
         <Route path="/manage-accounts" element={<ManageAccount />} />
         <Route path="/manage-services" element={<ManageService />} />
         <Route path="/manage-transactions" element={<ManageTransaction />} />

@@ -153,10 +153,6 @@ const HeaderManagePage = () => {
             width={80}
             alt="logo"
             loading="lazy"
-            onClick={() => {
-              navigate("/dashboard");
-            }}
-            className="cursor-pointer"
           />
           <div className="break-line"></div>
           <p className="role-name font-bold text-lg ml-5">My Admin</p>
