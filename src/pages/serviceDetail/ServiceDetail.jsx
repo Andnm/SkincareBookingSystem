@@ -10,6 +10,9 @@ import {
   HomeOutlined
 } from "@ant-design/icons";
 import { useScrollToTop } from "../../utils/helpers";
+import { userSelector } from "../../redux/selectors/selector";
+import { useSelector } from "react-redux";
+import { ROLE_CUSTOMER } from "../../utils/constants";
 
 const ServiceDetail = () => {
   useScrollToTop();
@@ -17,6 +20,7 @@ const ServiceDetail = () => {
   const navigate = useNavigate();
   const [service, setService] = useState(null);
   const [loading, setLoading] = useState(true);
+  const user = useSelector(userSelector);
 
   useEffect(() => {
     const fetchServiceDetail = async () => {
@@ -138,8 +142,7 @@ const ServiceDetail = () => {
               ))}
             </div>
           </div>
-
-          <Button
+          {user?.user?.roleName === ROLE_CUSTOMER && <Button
             type="primary"
             size="large"
             className="w-full"
@@ -155,7 +158,8 @@ const ServiceDetail = () => {
             }}
           >
             Book Now
-          </Button>
+          </Button>}
+
         </div>
       </div>
     </div>
