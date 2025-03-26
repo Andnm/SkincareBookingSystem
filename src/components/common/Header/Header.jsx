@@ -49,7 +49,7 @@ function Header() {
 
           switch (userRole) {
             case ROLE_MANAGER:
-              navigate("/manage-accounts");
+              navigate("/dashboard");
               break;
             case ROLE_STAFF:
               navigate("/manage-bookings");
