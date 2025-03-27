@@ -30,7 +30,7 @@ export const getStatusTag = (status) => {
       icon = <ClockCircleOutlined />;
       break;
     case "incomplete":
-    case "cancelled":
+    case "cancel":
       color = "red";
       icon = <CloseCircleOutlined />;
       break;

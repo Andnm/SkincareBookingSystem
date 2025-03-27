@@ -9,7 +9,10 @@ import {
 } from "antd";
 import { toast } from "react-toastify";
 import { ScheduleOutlined } from "@ant-design/icons";
-import { getBookingDetailById } from "../../../services/booking.services";
+import { 
+  getBookingDetailById,
+  cancelBookingByBookingId 
+} from "../../../services/booking.services";
 import {
   getAllBookingSlotByBookingId,
   checkInBookingSlots,
@@ -32,7 +35,7 @@ import BookingSlotTable from "./BookingSlotTable";
 
 const { Title, Text } = Typography;
 
-const BookingDetailModal = ({ bookingId, visible, onClose }) => {
+const BookingDetailModal = ({ bookingId, visible, onClose, onBookingUpdated }) => {
   const user = useSelector(userSelector);
 
   const [isLoading, setIsLoading] = useState(false);
@@ -44,6 +47,7 @@ const BookingDetailModal = ({ bookingId, visible, onClose }) => {
   const [selectedSlotId, setSelectedSlotId] = useState(null);
   const [expandedRowKeys, setExpandedRowKeys] = useState([]);
   const [slotDetails, setSlotDetails] = useState({});
+  const [canCancel, setCanCancel] = useState(false);
 
   const userRole = user?.user?.roleName;
   const isCustomer = userRole === ROLE_CUSTOMER;
@@ -65,12 +69,12 @@ const BookingDetailModal = ({ bookingId, visible, onClose }) => {
       try {
         const responseBookingSlot = await getAllBookingSlotByBookingId(bookingId);
         setBookingSlots(responseBookingSlot);
-        console.log("responseBookingSlot: ", responseBookingSlot);
 
         if (!isSkinTherapist) {
           const response = await getBookingDetailById(bookingId);
-          console.log("response: ", response);
           setBookingDetails(response);
+          
+          checkCancelEligibility(response, responseBookingSlot);
         }
       } catch (error) {
         toast.error(error.response?.data?.message);
@@ -79,6 +83,70 @@ const BookingDetailModal = ({ bookingId, visible, onClose }) => {
         setIsLoading(false);
       }
     }
+  };
+
+  const checkCancelEligibility = (bookingData, slots) => {
+    if (!bookingData || !isCustomer) {
+      setCanCancel(false);
+      return;
+    }
+
+    if (bookingData.status?.toLowerCase() === 'cancel') {
+      setCanCancel(false);
+      return;
+    }
+
+    if (slots && slots.length > 0) {
+      const now = new Date();
+      
+      let foundEligibleSlot = false;
+      
+      for (const slot of slots) {
+        if (slot.bookingDate) {
+          const parts = slot.bookingDate.split('/');
+          const bookingDate = new Date(parts[2], parts[1] - 1, parts[0]);
+          
+          const oneDayFromNow = new Date(now);
+          oneDayFromNow.setDate(oneDayFromNow.getDate() + 1);
+          
+          if (bookingDate > oneDayFromNow) {
+            foundEligibleSlot = true;
+            break;
+          }
+        }
+      }
+      
+      setCanCancel(foundEligibleSlot);
+    } else {
+      setCanCancel(false);
+    }
+  };
+
+  const handleCancelBooking = () => {
+    Modal.confirm({
+      title: 'Confirm booking cancellation',
+      content: 'Are you sure you want to cancel this booking?',
+      okText: 'Confirm',
+      cancelText: 'No',
+      onOk: async () => {
+        setActionLoading(true);
+        try {
+          const responseCancel = await cancelBookingByBookingId(bookingId);
+          toast.success('Booking canceled successfully');
+          
+          if (onBookingUpdated) {
+            onBookingUpdated(bookingId, 'Cancel');
+          }
+          
+          fetchData();
+        } catch (error) {
+          toast.error(error.response?.data?.message || 'Booking cannot be cancelled.');
+          console.error('Cancel booking error:', error);
+        } finally {
+          setActionLoading(false);
+        }
+      }
+    });
   };
 
   const handleCheckIn = (slotId) => {
@@ -208,9 +276,7 @@ const BookingDetailModal = ({ bookingId, visible, onClose }) => {
   const fetchSlotDetails = async (slotId) => {
     try {
       setActionLoading(true);
-      console.log("Fetching details for slot ID:", slotId);
       const slotDetail = await getBookingSlotDetailByBookingSlotId(slotId);
-      console.log("Received slot details:", slotDetail);
       setSlotDetails(prevDetails => ({
         ...prevDetails,
         [slotId]: slotDetail
@@ -237,17 +303,31 @@ const BookingDetailModal = ({ bookingId, visible, onClose }) => {
     }
   };
 
+  const getFooterButtons = () => {
+    const buttons = [
+      <Button key="close" onClick={onClose}>
+        Close
+      </Button>
+    ];
+
+    if (isCustomer && canCancel) {
+      buttons.unshift(
+        <Button key="cancel" danger onClick={handleCancelBooking} loading={actionLoading}>
+          Cancel Booking
+        </Button>
+      );
+    }
+
+    return buttons;
+  };
+
   return (
     <>
       <Modal
         title={<BookingHeader />}
         open={visible}
         onCancel={onClose}
-        footer={[
-          <Button key="close" onClick={onClose}>
-            Close
-          </Button>
-        ]}
+        footer={getFooterButtons()}
         width={1000}
         style={{ top: "10px" }}
       >

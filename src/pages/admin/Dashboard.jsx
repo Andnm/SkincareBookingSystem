@@ -30,13 +30,11 @@ const Dashboard = () => {
       if (userData) {
         setIsLoading(true);
         try {
-          const params = {
-            PageSize: 5000,
-          };
+ 
 
-          const responseTransaction = await getAllTransactions(params);
-          const responseBooking = await getAllBookings(params);
-
+          const responseTransaction = await getAllTransactions();
+          const responseBooking = await getAllBookings();
+          console.log("transactionData: ", responseTransaction.data)
           setTransactionData(responseTransaction.data)
           setBookingData(responseBooking.data)
 
@@ -98,7 +96,7 @@ const Dashboard = () => {
               chartType="bar"
               chartTitle="Doanh Thu"
               dataLabel="Doanh thu (VND)"
-              valueKey="amount"
+              valueKey="totalAmount"
               valueFormatter={(value) => `${value.toLocaleString()} VND`}
               tooltipValueLabel="Doanh thu"
               summaryValueLabel="Tổng doanh thu"

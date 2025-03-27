@@ -3,25 +3,31 @@ import { DatePicker, Radio } from "antd";
 import { Bar, Line } from "react-chartjs-2";
 import dayjs from "dayjs";
 import "dayjs/locale/vi";
+import customParseFormat from "dayjs/plugin/customParseFormat";
+import isBetween from "dayjs/plugin/isBetween";
+
+// Thêm plugins cần thiết
+dayjs.extend(customParseFormat);
+dayjs.extend(isBetween);
 
 const { WeekPicker, MonthPicker } = DatePicker;
 
 const DataChart = ({
   data,
-  chartType = "bar", // "bar" hoặc "line"
+  chartType = "bar", 
   chartTitle = "Biểu Đồ Dữ Liệu",
   dataLabel = "Dữ liệu",
-  valueKey = "value", // Khóa chứa giá trị (ví dụ: "amount" hoặc "count")
-  countKey = "count", // Khóa chứa số lượng (chỉ hiển thị nếu khác với valueKey)
-  valueFormatter = (value) => value.toString(), // Định dạng hiển thị giá trị
-  tooltipValueLabel = "Giá trị", // Nhãn tooltip cho giá trị
-  summaryValueLabel = "Tổng giá trị", // Nhãn tổng kết cho giá trị
-  summaryCountLabel = "Tổng số lượng", // Nhãn tổng kết cho số lượng (chỉ hiển thị nếu countKey khác valueKey)
-  mainColor = "rgba(75, 192, 192, 1)", // Màu sắc chính của biểu đồ
-  dateField = "createdAt", // Tên trường chứa ngày tháng trong dữ liệu
-  showCount = true, // Có hiển thị số lượng không
-  yAxisOptions = {}, // Tùy chọn bổ sung cho trục y
-  chartOptions = {}, // Tùy chọn bổ sung cho biểu đồ
+  valueKey = "value", 
+  countKey = "count", 
+  valueFormatter = (value) => value.toString(), 
+  tooltipValueLabel = "Giá trị", 
+  summaryValueLabel = "Tổng giá trị", 
+  summaryCountLabel = "Tổng số lượng", 
+  mainColor = "rgba(75, 192, 192, 1)", 
+  dateField = "createdAt", 
+  showCount = true, 
+  yAxisOptions = {}, 
+  chartOptions = {}, 
 }) => {
   const [viewMode, setViewMode] = useState("month"); // "week", "month", "year"
   const [selectedDate, setSelectedDate] = useState(dayjs());
@@ -30,6 +36,12 @@ const DataChart = ({
   const [totalCount, setTotalCount] = useState(0);
 
   dayjs.locale("vi");
+
+  // Hàm parse ngày tháng từ format "DD/MM/YYYY HH:mm:ss"
+  const parseDate = (dateString) => {
+    if (!dateString) return null;
+    return dayjs(dateString, "DD/MM/YYYY HH:mm:ss");
+  };
 
   const getWeekRange = (date) => {
     const startOfWeek = date.startOf("week");
@@ -55,7 +67,6 @@ const DataChart = ({
     let periodData;
     let periodLength;
     
-    // Xác định số lượng mục dữ liệu và ngày bắt đầu dựa vào chế độ xem
     switch (timeRange) {
       case "week":
         periodLength = 7;
@@ -100,11 +111,11 @@ const DataChart = ({
     let totalValueSum = 0;
     let totalCountSum = 0;
     
-    // Lọc và tổng hợp dữ liệu theo khoảng thời gian
     data.forEach((item) => {
-      const itemDate = dayjs(item[dateField]);
+      // Sử dụng hàm parseDate để chuyển đổi chuỗi ngày tháng
+      const itemDate = parseDate(item[dateField]);
       
-      if (itemDate.isBetween(startDate, endDate, null, "[]")) {
+      if (itemDate && itemDate.isValid() && itemDate.isBetween(startDate, endDate, null, "[]")) {
         let index;
         
         switch (timeRange) {
@@ -121,13 +132,14 @@ const DataChart = ({
             return;
         }
         
-        // Cập nhật giá trị
-        const itemValue = item[valueKey] || 0;
-        periodData[index][valueKey] += itemValue;
-        periodData[index].count += 1;
-        
-        totalValueSum += itemValue;
-        totalCountSum += 1;
+        if (index >= 0 && index < periodData.length) {
+          const itemValue = item[valueKey] || 0;
+          periodData[index][valueKey] += itemValue;
+          periodData[index].count += 1;
+          
+          totalValueSum += itemValue;
+          totalCountSum += 1;
+        }
       }
     });
     
@@ -169,7 +181,6 @@ const DataChart = ({
     }
   }, [data, selectedDate, viewMode, valueKey]);
 
-  // Chuẩn bị dữ liệu cho biểu đồ
   const chartData = {
     labels: filteredData.map((item) => item.label),
     datasets: [
@@ -187,7 +198,6 @@ const DataChart = ({
     ],
   };
 
-  // Tùy chọn mặc định cho biểu đồ
   const defaultChartOptions = {
     responsive: true,
     maintainAspectRatio: false,

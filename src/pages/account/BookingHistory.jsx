@@ -30,15 +30,15 @@ const BookingHistory = () => {
     const userData = useSelector(userSelector);
 
     const [isLoading, setIsLoading] = useState(false);
-    const [allBookingData, setAllBookingData] = useState([]); 
-    const [filteredBookingData, setFilteredBookingData] = useState([]); 
+    const [allBookingData, setAllBookingData] = useState([]);
+    const [filteredBookingData, setFilteredBookingData] = useState([]);
 
     const [selectedBookingId, setSelectedBookingId] = useState(null);
     const [isDetailModalVisible, setIsDetailModalVisible] = useState(false);
 
     const [paymentStatus, setPaymentStatus] = useState("");
     const [totalAmount, setTotalAmount] = useState(null);
-    const [fromCreatedDate, setFromCreatedDate] = useState(dayjs()); 
+    const [fromCreatedDate, setFromCreatedDate] = useState(dayjs());
 
     const [orderBy, setOrderBy] = useState("");
     const [isAscending, setIsAscending] = useState(false);
@@ -47,28 +47,6 @@ const BookingHistory = () => {
     const [totalRows, setTotalRows] = useState(0);
 
     useEffect(() => {
-        const fetchBookings = async () => {
-            if (userData) {
-                setIsLoading(true);
-                try {
-                    const params = {
-                        TotalAmount: totalAmount,
-                        OrderBy: orderBy,
-                        IsAscending: isAscending,
-                        PageIndex: 0, 
-                        PageSize: 1000, 
-                    };
-
-                    const responseGetAllBookings = await getAllBookings(params);
-                    setAllBookingData([...responseGetAllBookings.data]);
-                } catch (error) {
-                    toast.error(error.response?.data?.message);
-                } finally {
-                    setIsLoading(false);
-                }
-            }
-        };
-
         fetchBookings();
     }, [
         totalAmount,
@@ -77,12 +55,39 @@ const BookingHistory = () => {
         userData
     ]);
 
+    const fetchBookings = async () => {
+        if (userData) {
+            setIsLoading(true);
+            try {
+                const params = {
+                    TotalAmount: totalAmount,
+                    OrderBy: orderBy,
+                    IsAscending: isAscending,
+                    PageIndex: 0,
+                    PageSize: 1000,
+                };
+
+                const responseGetAllBookings = await getAllBookings(params);
+                console.log("responseGetAllBookings: ",responseGetAllBookings)
+                setAllBookingData([...responseGetAllBookings.data]);
+            } catch (error) {
+                toast.error(error.response?.data?.message);
+            } finally {
+                setIsLoading(false);
+            }
+        }
+    };
+
     useEffect(() => {
+        filterAndPaginateData();
+    }, [allBookingData, fromCreatedDate, totalAmount, orderBy, isAscending, pageIndex, pageSize]);
+
+    const filterAndPaginateData = () => {
         let filtered = [...allBookingData];
 
         if (fromCreatedDate) {
             const selectedDate = fromCreatedDate.format('DD/MM/YYYY');
-            
+
             filtered = filtered.filter(booking => {
                 const bookingDate = booking.createdAt ? booking.createdAt.split(' ')[0] : '';
                 return bookingDate === selectedDate;
@@ -97,12 +102,12 @@ const BookingHistory = () => {
             filtered.sort((a, b) => {
                 let valueA = a[orderBy];
                 let valueB = b[orderBy];
-                
+
                 if (typeof valueA === 'string') {
                     valueA = valueA.toLowerCase();
                     valueB = valueB.toLowerCase();
                 }
-                
+
                 if (valueA < valueB) return isAscending ? -1 : 1;
                 if (valueA > valueB) return isAscending ? 1 : -1;
                 return 0;
@@ -110,12 +115,12 @@ const BookingHistory = () => {
         }
 
         setTotalRows(filtered.length);
-        
+
         const start = (pageIndex - 1) * pageSize;
         const paginatedData = filtered.slice(start, start + pageSize);
-        
+
         setFilteredBookingData(paginatedData);
-    }, [allBookingData, fromCreatedDate, totalAmount, orderBy, isAscending, pageIndex, pageSize]);
+    };
 
     const handlePageChange = (page, pageSize) => {
         setPageIndex(page);
@@ -132,19 +137,32 @@ const BookingHistory = () => {
         setIsDetailModalVisible(false);
     };
 
-    const getStatusTag = (paymentStatus) => {
+    const handleBookingUpdated = (bookingId, newStatus) => {
+        setAllBookingData(prevData => {
+            const updatedData = prevData.map(booking => {
+                if (booking.id === bookingId) {
+                    return { ...booking, status: newStatus };
+                }
+                return booking;
+            });
+            return updatedData;
+        });
+    };
+
+    const getStatusTag = (status) => {
         let color = "";
-        switch (paymentStatus?.toLowerCase()) {
+        switch (status?.toLowerCase()) {
             case "done":
                 color = "green";
                 break;
             case "incomplete":
+            case "cancel":
                 color = "red";
                 break;
             default:
                 color = "blue";
         }
-        return <Tag color={color}>{paymentStatus}</Tag>;
+        return <Tag color={color}>{status}</Tag>;
     };
 
     const columns = [
@@ -292,6 +310,7 @@ const BookingHistory = () => {
                     bookingId={selectedBookingId}
                     visible={isDetailModalVisible}
                     onClose={handleCloseDetailModal}
+                    onBookingUpdated={handleBookingUpdated}
                 />
             </div>
         </AccountLayout>

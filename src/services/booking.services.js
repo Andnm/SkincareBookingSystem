@@ -58,6 +58,15 @@ export const createBookings = async (data) => {
   }
 };
 
+export const cancelBookingByBookingId = async (id) => {
+  try {
+    const response = await axiosInstance.patch(`/api/v1/bookings/${id}/cancel`);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
 export const getAllSkinTherapistByWorkingDateAndSlotId = async (params) => {
   try {
     const response = await axiosInstance.get(
